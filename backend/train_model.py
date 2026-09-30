@@ -1,187 +1,146 @@
 import os
-import json
 import tensorflow as tf
+import tensorflow_datasets as tfds
 
-from tensorflow.keras import layers, models
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-
-
-DATASET_DIR = "dataset"
-MODEL_DIR = "model"
-
-IMAGE_SIZE = (224, 224)
+IMG_SIZE = 224
 BATCH_SIZE = 32
-SEED = 123
+EPOCHS = 5
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "model")
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+MODEL_PATH = os.path.join(MODEL_DIR, "crop_model.keras")
+LABELS_PATH = os.path.join(BASE_DIR, "labels.txt")
 
-print("\nLoading crop dataset...\n")
+print("\n==============================")
+print("SMART GREENHOUSE AI")
+print("==============================")
+print("Loading PlantVillage dataset...")
 
-
-train_dataset = tf.keras.utils.image_dataset_from_directory(
-    DATASET_DIR,
-    validation_split=0.2,
-    subset="training",
-    seed=SEED,
-    image_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE
+(train_data, val_data), info = tfds.load(
+    "plant_village",
+    split=["train[:80%]", "train[80%:]"],
+    with_info=True,
+    shuffle_files=True
 )
 
+class_names = info.features["label"].names
 
-validation_dataset = tf.keras.utils.image_dataset_from_directory(
-    DATASET_DIR,
-    validation_split=0.2,
-    subset="validation",
-    seed=SEED,
-    image_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE
-)
+print("PlantVillage loaded.")
+print("Total classes:", len(class_names))
 
-
-class_names = train_dataset.class_names
-
-
-print("\nCrops detected:")
+# Find the classes belonging to our 3 crops
+mapping = {}
 
 for i, name in enumerate(class_names):
-    print(i, "->", name)
+    if name.startswith("Tomato___"):
+        mapping[i] = 0
+    elif name.startswith("Pepper,_bell___"):
+        mapping[i] = 1
+    elif name.startswith("Potato___"):
+        mapping[i] = 2
 
+wanted = tf.constant(list(mapping.keys()), dtype=tf.int64)
 
-labels_path = os.path.join(
-    MODEL_DIR,
-    "labels.json"
+keys = tf.constant(list(mapping.keys()), dtype=tf.int64)
+values = tf.constant(list(mapping.values()), dtype=tf.int64)
+
+table = tf.lookup.StaticHashTable(
+    tf.lookup.KeyValueTensorInitializer(keys, values),
+    default_value=-1
 )
 
+def keep_crop(example):
+    label = tf.cast(example["label"], tf.int64)
+    return tf.reduce_any(tf.equal(label, wanted))
 
-with open(labels_path, "w") as file:
-
-    json.dump(
-        class_names,
-        file,
-        indent=4
+def prepare(example):
+    image = tf.image.resize(
+        example["image"],
+        (IMG_SIZE, IMG_SIZE)
     )
 
+    image = tf.cast(image, tf.float32)
 
-AUTOTUNE = tf.data.AUTOTUNE
+    image = tf.keras.applications.mobilenet_v2.preprocess_input(
+        image
+    )
 
-train_dataset = train_dataset.prefetch(
-    AUTOTUNE
+    label = table.lookup(
+        tf.cast(example["label"], tf.int64)
+    )
+
+    return image, label
+
+train_data = train_data.filter(keep_crop)
+val_data = val_data.filter(keep_crop)
+
+train_data = train_data.map(
+    prepare,
+    num_parallel_calls=tf.data.AUTOTUNE
 )
 
-validation_dataset = validation_dataset.prefetch(
-    AUTOTUNE
+val_data = val_data.map(
+    prepare,
+    num_parallel_calls=tf.data.AUTOTUNE
 )
 
+train_data = train_data.shuffle(5000).batch(
+    BATCH_SIZE
+).prefetch(tf.data.AUTOTUNE)
 
-data_augmentation = tf.keras.Sequential([
+val_data = val_data.batch(
+    BATCH_SIZE
+).prefetch(tf.data.AUTOTUNE)
 
-    layers.RandomFlip("horizontal"),
+print("\nCreating AI model...")
 
-    layers.RandomRotation(0.15),
-
-    layers.RandomZoom(0.15),
-
-    layers.RandomContrast(0.1)
-
-])
-
-
-base_model = MobileNetV2(
-
-    input_shape=(224, 224, 3),
-
+base_model = tf.keras.applications.MobileNetV2(
+    input_shape=(IMG_SIZE, IMG_SIZE, 3),
     include_top=False,
-
     weights="imagenet"
-
 )
-
 
 base_model.trainable = False
 
-
-inputs = layers.Input(
-    shape=(224, 224, 3)
-)
-
-
-x = data_augmentation(inputs)
-
-x = preprocess_input(x)
-
-x = base_model(
-    x,
-    training=False
-)
-
-x = layers.GlobalAveragePooling2D()(x)
-
-x = layers.Dropout(0.3)(x)
-
-
-outputs = layers.Dense(
-    len(class_names),
-    activation="softmax"
-)(x)
-
-
-model = models.Model(
-    inputs,
-    outputs
-)
-
+model = tf.keras.Sequential([
+    base_model,
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dense(128, activation="relu"),
+    tf.keras.layers.Dropout(0.3),
+    tf.keras.layers.Dense(3, activation="softmax")
+])
 
 model.compile(
-
-    optimizer=tf.keras.optimizers.Adam(
-        learning_rate=0.001
-    ),
-
+    optimizer="adam",
     loss="sparse_categorical_crossentropy",
-
     metrics=["accuracy"]
-
 )
 
-
-print("\n================================")
-print("STARTING AI TRAINING")
-print("================================\n")
-
+print("\n==============================")
+print("STARTING TRAINING")
+print("==============================")
 
 model.fit(
-
-    train_dataset,
-
-    validation_data=validation_dataset,
-
-    epochs=10
-
+    train_data,
+    validation_data=val_data,
+    epochs=EPOCHS
 )
 
+print("\nSaving model...")
 
-model_path = os.path.join(
-    MODEL_DIR,
-    "crop_model.keras"
-)
+model.save(MODEL_PATH)
 
+with open(LABELS_PATH, "w", encoding="utf-8") as f:
+    f.write("Tomato\n")
+    f.write("Pepper\n")
+    f.write("Potato\n")
 
-model.save(model_path)
-
-
-print("\n================================")
+print("\n==============================")
 print("AI TRAINING COMPLETE")
-print("================================")
-
-print(
-    "Model saved:",
-    model_path
-)
-
-print(
-    "Labels saved:",
-    labels_path
-)
+print("==============================")
+print("Model:", MODEL_PATH)
+print("Labels:", LABELS_PATH)
+print("==============================")
