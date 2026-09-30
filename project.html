@@ -1,123 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Smart Greenhouse AI</title>
 
+    <!-- Main Website CSS -->
     <link rel="stylesheet" href="project.css">
+
+    <!-- Advanced Encyclopedia CSS -->
+    <link rel="stylesheet" href="encyclopedia.css">
 </head>
 
 <body>
 
-    <!-- ================= NAVBAR ================= -->
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
 
     <header class="navbar">
 
         <div class="logo">
-            <span>🌱</span>
-            Smart Greenhouse AI
+            <span class="logo-icon">🌱</span>
+            <span>Smart Greenhouse AI</span>
         </div>
 
-        <nav>
+        <nav class="nav-links">
 
-            <button class="nav-link active" data-section="dashboard">
+            <a href="#dashboard">
                 Dashboard
-            </button>
+            </a>
 
-            <button class="nav-link" data-section="encyclopedia">
+            <a href="#encyclopedia">
                 Encyclopedia
-            </button>
+            </a>
 
-            <button class="nav-link" data-section="scanner">
+            <a href="#scanner">
                 AI Scanner
-            </button>
+            </a>
 
         </nav>
-
-        <div class="system-status">
-            <span class="status-dot"></span>
-            System Online
-        </div>
 
     </header>
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- =========================================================
+         MAIN CONTAINER
+    ========================================================== -->
 
     <main>
 
 
-        <!-- ================= DASHBOARD ================= -->
+        <!-- =====================================================
+             DASHBOARD
+        ====================================================== -->
 
-        <section id="dashboard" class="page-section active-section">
+        <section
+            id="dashboard"
+            class="dashboard-section"
+        >
 
+            <div class="section-heading">
 
-            <!-- ================= OUTDOOR WEATHER ================= -->
+                <span class="section-tag">
+                    SMART GREENHOUSE
+                </span>
 
-            <div class="weather-location">
+                <h1>
+                    Greenhouse Intelligence Dashboard
+                </h1>
 
-                <div>
-                    <p class="tag">OUTDOOR WEATHER</p>
-
-                    <h2 id="locationName">
-                        Detecting location...
-                    </h2>
-
-                    <p id="weatherText">
-                        Getting live outdoor weather...
-                    </p>
-                </div>
-
-                <div class="weather-icon">
-                    🌤️
-                </div>
+                <p>
+                    Monitor environmental conditions,
+                    greenhouse sensors, crops and plant health
+                    from one place.
+                </p>
 
             </div>
 
 
-            <!-- ================= HERO ================= -->
+            <!-- =================================================
+                 OUTDOOR WEATHER
+            ================================================== -->
 
-            <div class="hero">
+            <div class="dashboard-card weather-card">
 
-                <div class="hero-content">
-
-                    <p class="tag">
-                        AI POWERED AGRICULTURE
-                    </p>
-
-                    <h1>
-                        Smart Greenhouse
-                        <span>Control Center</span>
-                    </h1>
-
-                    <p class="description">
-                        Monitor your greenhouse environment and use AI
-                        to make smarter decisions for your crops.
-                    </p>
-
-                </div>
-
-
-                <!-- AI RECOMMENDATION -->
-
-                <div class="ai-recommendation">
-
-                    <div class="ai-icon">
-                        🤖
-                    </div>
+                <div class="card-header">
 
                     <div>
+                        <span class="card-label">
+                            OUTDOOR CONDITIONS
+                        </span>
 
-                        <p>
-                            AI RECOMMENDATION
-                        </p>
-
-                        <h2 id="aiAction">
-                            NORMAL
+                        <h2>
+                            Local Weather
                         </h2>
+                    </div>
+
+                    <div class="card-icon">
+                        🌤️
+                    </div>
+
+                </div>
+
+
+                <div class="weather-content">
+
+                    <div class="weather-main">
+
+                        <div
+                            id="weatherTemperature"
+                            class="weather-temperature"
+                        >
+                            --°C
+                        </div>
+
+                        <div
+                            id="weatherHumidity"
+                            class="weather-humidity"
+                        >
+                            Humidity: --%
+                        </div>
+
+                    </div>
+
+
+                    <div class="weather-location">
+
+                        <span>
+                            📍
+                        </span>
+
+                        <span id="weatherLocation">
+                            Your current location
+                        </span>
 
                     </div>
 
@@ -126,145 +147,156 @@
             </div>
 
 
-            <!-- ================= GREENHOUSE MONITORING ================= -->
-
-            <div class="section-title">
-
-                <div>
-
-                    <p class="tag">
-                        GREENHOUSE SENSORS
-                    </p>
-
-                    <h2>
-                        Greenhouse Environment
-                    </h2>
-
-                    <p class="section-description">
-                        These values represent the greenhouse itself.
-                        Connect real sensors later for live readings.
-                    </p>
-
-                </div>
-
-                <button
-                    id="refreshBtn"
-                    class="primary-button"
-                >
-                    ↻ Refresh Demo Data
-                </button>
-
-            </div>
-
-
-            <!-- SENSOR CARDS -->
+            <!-- =================================================
+                 GREENHOUSE SENSOR CARDS
+            ================================================== -->
 
             <div class="sensor-grid">
 
 
-                <!-- TEMPERATURE -->
+                <!-- Temperature -->
 
                 <div class="sensor-card">
 
-                    <div class="card-icon">
-                        🌡️
-                    </div>
+                    <div class="sensor-top">
 
-                    <div class="card-info">
-
-                        <p>
-                            Greenhouse Temperature
-                        </p>
-
-                        <h2 id="temperature">
-                            24°C
-                        </h2>
-
-                        <span id="tempStatus">
-                            Normal
+                        <span class="sensor-icon">
+                            🌡️
                         </span>
 
+                        <span class="sensor-status">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <p class="sensor-title">
+                        Temperature
+                    </p>
+
+                    <div
+                        id="temperatureValue"
+                        class="sensor-value"
+                    >
+                        24°C
+                    </div>
+
+                    <div class="sensor-bar">
+                        <div
+                            id="temperatureProgress"
+                            class="sensor-progress"
+                        ></div>
                     </div>
 
                 </div>
 
 
-                <!-- HUMIDITY -->
+                <!-- Humidity -->
 
                 <div class="sensor-card">
 
-                    <div class="card-icon">
-                        💧
-                    </div>
+                    <div class="sensor-top">
 
-                    <div class="card-info">
-
-                        <p>
-                            Greenhouse Humidity
-                        </p>
-
-                        <h2 id="humidity">
-                            70%
-                        </h2>
-
-                        <span id="humidityStatus">
-                            Normal
+                        <span class="sensor-icon">
+                            💧
                         </span>
 
+                        <span class="sensor-status">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <p class="sensor-title">
+                        Humidity
+                    </p>
+
+                    <div
+                        id="humidityValue"
+                        class="sensor-value"
+                    >
+                        70%
+                    </div>
+
+                    <div class="sensor-bar">
+                        <div
+                            id="humidityProgress"
+                            class="sensor-progress"
+                        ></div>
                     </div>
 
                 </div>
 
 
-                <!-- SOIL -->
+                <!-- Soil Moisture -->
 
                 <div class="sensor-card">
 
-                    <div class="card-icon">
-                        🌱
-                    </div>
+                    <div class="sensor-top">
 
-                    <div class="card-info">
-
-                        <p>
-                            Soil Moisture
-                        </p>
-
-                        <h2 id="soilMoisture">
-                            80%
-                        </h2>
-
-                        <span id="soilStatus">
-                            Healthy
+                        <span class="sensor-icon">
+                            🌱
                         </span>
 
+                        <span class="sensor-status">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <p class="sensor-title">
+                        Soil Moisture
+                    </p>
+
+                    <div
+                        id="soilMoistureValue"
+                        class="sensor-value"
+                    >
+                        80%
+                    </div>
+
+                    <div class="sensor-bar">
+                        <div
+                            id="soilMoistureProgress"
+                            class="sensor-progress"
+                        ></div>
                     </div>
 
                 </div>
 
 
-                <!-- WATER -->
+                <!-- Water Temperature -->
 
                 <div class="sensor-card">
 
-                    <div class="card-icon">
-                        🌊
-                    </div>
+                    <div class="sensor-top">
 
-                    <div class="card-info">
-
-                        <p>
-                            Water Temperature
-                        </p>
-
-                        <h2 id="waterTemperature">
-                            22°C
-                        </h2>
-
-                        <span>
-                            Normal
+                        <span class="sensor-icon">
+                            🚰
                         </span>
 
+                        <span class="sensor-status">
+                            LIVE
+                        </span>
+
+                    </div>
+
+                    <p class="sensor-title">
+                        Water Temperature
+                    </p>
+
+                    <div
+                        id="waterTemperatureValue"
+                        class="sensor-value"
+                    >
+                        22°C
+                    </div>
+
+                    <div class="sensor-bar">
+                        <div
+                            id="waterTemperatureProgress"
+                            class="sensor-progress"
+                        ></div>
                     </div>
 
                 </div>
@@ -272,110 +304,58 @@
             </div>
 
 
-            <!-- ================= CROP PROTECTION ================= -->
+            <!-- =================================================
+                 CROP SUITABILITY
+            ================================================== -->
 
-            <div class="crop-monitor-panel">
+            <div class="dashboard-card">
 
-                <div class="panel-heading">
+                <div class="card-header">
 
                     <div>
 
-                        <p class="tag">
-                            CROP PROTECTION
-                        </p>
+                        <span class="card-label">
+                            CROP ANALYSIS
+                        </span>
 
                         <h2>
                             Crop Suitability Monitor
                         </h2>
 
-                        <p class="section-description">
-                            Compare current outdoor temperature with
-                            the selected crop's configured temperature range.
-                        </p>
+                    </div>
 
+                    <div class="card-icon">
+                        🌾
                     </div>
 
                 </div>
 
-
-                <!-- CROP SELECTOR -->
-
-                <div class="crop-selector">
-
-                    <label for="cropSelect">
-                        🌱 What crop are you cultivating?
-                    </label>
-
-                    <select id="cropSelect">
-
-                        <option value="">
-                            Select a crop
-                        </option>
-
-                        <option value="tomato">
-                            🍅 Tomato
-                        </option>
-
-                        <option value="wheat">
-                            🌾 Wheat
-                        </option>
-
-                        <option value="rice">
-                            🌾 Rice
-                        </option>
-
-                        <option value="cucumber">
-                            🥒 Cucumber
-                        </option>
-
-                        <option value="pepper">
-                            🌶️ Pepper
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- THREAT WARNING -->
 
                 <div
-                    id="cropWarning"
-                    class="crop-warning hidden"
+                    id="cropSuitabilityGrid"
+                    class="crop-suitability-grid"
                 >
 
-                    <div class="warning-icon">
-                        ⚠️
-                    </div>
-
-                    <div>
-
-                        <strong id="warningTitle">
-                            Crop Status
-                        </strong>
-
-                        <p id="warningMessage">
-                            Select a crop to check temperature suitability.
-                        </p>
-
-                    </div>
+                    <!-- JavaScript will populate this -->
 
                 </div>
 
             </div>
 
 
-            <!-- ================= SYSTEM OVERVIEW ================= -->
+            <!-- =================================================
+                 ENVIRONMENTAL MONITORING
+            ================================================== -->
 
-            <div class="monitor-panel">
+            <div class="dashboard-card">
 
-                <div class="panel-heading">
+                <div class="card-header">
 
                     <div>
 
-                        <p class="tag">
-                            SYSTEM OVERVIEW
-                        </p>
+                        <span class="card-label">
+                            ENVIRONMENT
+                        </span>
 
                         <h2>
                             Environmental Monitoring
@@ -383,66 +363,19 @@
 
                     </div>
 
-                    <span class="live-indicator">
-                        ● LIVE
-                    </span>
+                    <div class="card-icon">
+                        🌍
+                    </div>
 
                 </div>
 
 
-                <div class="monitor-grid">
+                <div
+                    id="environmentAlerts"
+                    class="environment-alerts"
+                >
 
-
-                    <div class="monitor-item">
-
-                        <span>
-                            Temperature
-                        </span>
-
-                        <strong id="monitorTemp">
-                            Normal
-                        </strong>
-
-                    </div>
-
-
-                    <div class="monitor-item">
-
-                        <span>
-                            Humidity
-                        </span>
-
-                        <strong id="monitorHumidity">
-                            Normal
-                        </strong>
-
-                    </div>
-
-
-                    <div class="monitor-item">
-
-                        <span>
-                            Soil
-                        </span>
-
-                        <strong id="monitorSoil">
-                            Healthy
-                        </strong>
-
-                    </div>
-
-
-                    <div class="monitor-item">
-
-                        <span>
-                            AI Engine
-                        </span>
-
-                        <strong class="online">
-                            Active
-                        </strong>
-
-                    </div>
+                    <!-- JavaScript generated alerts -->
 
                 </div>
 
@@ -452,294 +385,138 @@
 
 
 
-        <!-- ================= ENCYCLOPEDIA ================= -->
+        <!-- =====================================================
+             ENCYCLOPEDIA
+        ====================================================== -->
 
         <section
             id="encyclopedia"
-            class="page-section"
+            class="encyclopedia-section"
         >
 
-            <div class="page-header">
+            <div class="section-heading">
 
-                <p class="tag">
+                <span class="section-tag">
                     KNOWLEDGE BASE
-                </p>
+                </span>
 
                 <h1>
-                    Greenhouse
-                    <span>Encyclopedia</span>
+                    Greenhouse Encyclopedia
                 </h1>
 
                 <p>
-                    Explore crops, insects, diseases and
-                    greenhouse-related information.
+                    Explore crops, pests, diseases and
+                    soil conditions with detailed greenhouse
+                    information.
                 </p>
 
             </div>
 
 
-            <!-- SEARCH -->
+            <!-- =================================================
+                 ENCYCLOPEDIA SEARCH
+            ================================================== -->
 
-            <div class="search-box">
+            <div class="encyclopedia-controls">
 
-                <span>
-                    🔎
-                </span>
+                <div class="encyclopedia-search">
 
-                <input
-                    type="text"
-                    id="encyclopediaSearch"
-                    placeholder="Search crops, insects, diseases..."
+                    <span class="search-icon">
+                        🔍
+                    </span>
+
+                    <input
+                        type="text"
+                        id="encyclopediaSearch"
+                        placeholder="Search crops, pests, diseases, soil..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <div
+                    id="encyclopediaCategories"
+                    class="encyclopedia-categories"
                 >
+
+                    <button
+                        class="category-button active"
+                        data-category="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        class="category-button"
+                        data-category="crop"
+                    >
+                        🌱 Crops
+                    </button>
+
+                    <button
+                        class="category-button"
+                        data-category="insect"
+                    >
+                        🐛 Insects
+                    </button>
+
+                    <button
+                        class="category-button"
+                        data-category="disease"
+                    >
+                        🦠 Diseases
+                    </button>
+
+                    <button
+                        class="category-button"
+                        data-category="soil"
+                    >
+                        🪨 Soil
+                    </button>
+
+                </div>
 
             </div>
 
 
-            <!-- CATEGORIES -->
-
-            <div class="category-buttons">
-
-                <button
-                    class="category-button active"
-                    data-category="all"
-                >
-                    All
-                </button>
-
-                <button
-                    class="category-button"
-                    data-category="crop"
-                >
-                    🌱 Crops
-                </button>
-
-                <button
-                    class="category-button"
-                    data-category="insect"
-                >
-                    🐞 Insects
-                </button>
-
-                <button
-                    class="category-button"
-                    data-category="disease"
-                >
-                    🦠 Diseases
-                </button>
-
-                <button
-                    class="category-button"
-                    data-category="soil"
-                >
-                    🪨 Soil
-                </button>
-
-            </div>
-
-
-            <!-- ENCYCLOPEDIA CARDS -->
+            <!-- =================================================
+                 ENCYCLOPEDIA GRID
+            ================================================== -->
 
             <div
                 id="encyclopediaGrid"
                 class="encyclopedia-grid"
             >
 
-                <article
-                    class="knowledge-card"
-                    data-category="crop"
-                >
+                <!--
+                    encyclopedia.js will automatically
+                    generate all encyclopedia cards here.
+                -->
 
-                    <div class="knowledge-icon">
-                        🍅
-                    </div>
-
-                    <div>
-
-                        <span class="knowledge-type">
-                            CROP
-                        </span>
-
-                        <h2>
-                            Tomato
-                        </h2>
-
-                        <p>
-                            Learn about tomato growing conditions,
-                            watering and common problems.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
+            </div>
 
 
-                <article
-                    class="knowledge-card"
-                    data-category="crop"
-                >
+            <!-- Empty search state -->
 
-                    <div class="knowledge-icon">
-                        🌾
-                    </div>
+            <div
+                id="encyclopediaEmpty"
+                class="encyclopedia-empty"
+                style="display: none;"
+            >
 
-                    <div>
+                <div class="empty-icon">
+                    🔎
+                </div>
 
-                        <span class="knowledge-type">
-                            CROP
-                        </span>
+                <h3>
+                    No results found
+                </h3>
 
-                        <h2>
-                            Wheat
-                        </h2>
-
-                        <p>
-                            Explore wheat growth requirements,
-                            soil conditions and diseases.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
-
-
-                <article
-                    class="knowledge-card"
-                    data-category="insect"
-                >
-
-                    <div class="knowledge-icon">
-                        🐞
-                    </div>
-
-                    <div>
-
-                        <span class="knowledge-type">
-                            INSECT
-                        </span>
-
-                        <h2>
-                            Aphid
-                        </h2>
-
-                        <p>
-                            Learn how aphids affect plants and
-                            how they can be identified.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
-
-
-                <article
-                    class="knowledge-card"
-                    data-category="insect"
-                >
-
-                    <div class="knowledge-icon">
-                        🦋
-                    </div>
-
-                    <div>
-
-                        <span class="knowledge-type">
-                            INSECT
-                        </span>
-
-                        <h2>
-                            Whitefly
-                        </h2>
-
-                        <p>
-                            Information about whiteflies,
-                            plant damage and prevention.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
-
-
-                <article
-                    class="knowledge-card"
-                    data-category="disease"
-                >
-
-                    <div class="knowledge-icon">
-                        🦠
-                    </div>
-
-                    <div>
-
-                        <span class="knowledge-type">
-                            DISEASE
-                        </span>
-
-                        <h2>
-                            Powdery Mildew
-                        </h2>
-
-                        <p>
-                            Learn about symptoms and conditions
-                            associated with this plant disease.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
-
-
-                <article
-                    class="knowledge-card"
-                    data-category="soil"
-                >
-
-                    <div class="knowledge-icon">
-                        🪨
-                    </div>
-
-                    <div>
-
-                        <span class="knowledge-type">
-                            SOIL
-                        </span>
-
-                        <h2>
-                            Healthy Soil
-                        </h2>
-
-                        <p>
-                            Learn about soil moisture, nutrients,
-                            drainage and plant growth.
-                        </p>
-
-                        <button class="learn-button">
-                            Learn More →
-                        </button>
-
-                    </div>
-
-                </article>
+                <p>
+                    Try searching for another crop,
+                    pest, disease or soil topic.
+                </p>
 
             </div>
 
@@ -747,27 +524,28 @@
 
 
 
-        <!-- ================= AI SCANNER ================= -->
+        <!-- =====================================================
+             AI PLANT SCANNER
+        ====================================================== -->
 
         <section
             id="scanner"
-            class="page-section"
+            class="scanner-section"
         >
 
-            <div class="page-header">
+            <div class="section-heading">
 
-                <p class="tag">
-                    COMPUTER VISION
-                </p>
+                <span class="section-tag">
+                    ARTIFICIAL INTELLIGENCE
+                </span>
 
                 <h1>
-                    AI Crop & Insect
-                    <span>Scanner</span>
+                    AI Plant Scanner
                 </h1>
 
                 <p>
-                    Upload a photo of a crop, insect or plant
-                    problem and analyze it with AI.
+                    Upload a plant image to analyze its
+                    possible identity and health condition.
                 </p>
 
             </div>
@@ -776,37 +554,37 @@
             <div class="scanner-layout">
 
 
-                <!-- UPLOAD PANEL -->
+                <!-- =================================================
+                     UPLOAD PANEL
+                ================================================== -->
 
-                <div class="upload-panel">
+                <div class="scanner-card upload-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                IMAGE INPUT
+                            </span>
+
+                            <h2>
+                                Upload Plant Image
+                            </h2>
+
+                        </div>
+
+                        <div class="card-icon">
+                            📷
+                        </div>
+
+                    </div>
+
 
                     <div
                         id="uploadArea"
                         class="upload-area"
                     >
-
-                        <div
-                            id="uploadIcon"
-                            class="upload-icon"
-                        >
-                            📷
-                        </div>
-
-                        <h2>
-                            Upload an Image
-                        </h2>
-
-                        <p>
-                            Upload a clear photo of a crop,
-                            insect or plant.
-                        </p>
-
-                        <label
-                            for="imageInput"
-                            class="upload-button"
-                        >
-                            Choose Image
-                        </label>
 
                         <input
                             type="file"
@@ -815,120 +593,179 @@
                             hidden
                         >
 
-                        <p class="upload-note">
-                            JPG, PNG or WEBP
-                        </p>
 
-                    </div>
-
-
-                    <!-- IMAGE PREVIEW -->
-
-                    <div
-                        id="imagePreviewContainer"
-                        class="image-preview-container hidden"
-                    >
-
-                        <img
-                            id="imagePreview"
-                            src=""
-                            alt="Uploaded image preview"
+                        <div
+                            id="uploadPlaceholder"
+                            class="upload-placeholder"
                         >
 
-                        <button
-                            id="removeImage"
-                            class="remove-button"
+                            <div class="upload-icon">
+                                📤
+                            </div>
+
+                            <h3>
+                                Upload an image
+                            </h3>
+
+                            <p>
+                                Click here or drag and drop
+                                a plant image.
+                            </p>
+
+                            <span>
+                                JPG, JPEG, PNG • Max recommended size 10MB
+                            </span>
+
+                            <button
+                                type="button"
+                                id="uploadButton"
+                                class="primary-button"
+                            >
+                                Choose Image
+                            </button>
+
+                        </div>
+
+
+                        <!-- Image preview -->
+
+                        <div
+                            id="imagePreviewContainer"
+                            class="image-preview-container"
+                            style="display: none;"
                         >
-                            Remove Image
-                        </button>
+
+                            <img
+                                id="imagePreview"
+                                src=""
+                                alt="Uploaded plant preview"
+                            >
+
+                            <button
+                                type="button"
+                                id="removeImage"
+                                class="remove-image"
+                            >
+                                ×
+                            </button>
+
+                        </div>
 
                     </div>
 
 
                     <button
+                        type="button"
                         id="analyzeBtn"
                         class="analyze-button"
                         disabled
                     >
-                        🤖 Analyze Image
+                        <span>
+                            ✨
+                        </span>
+
+                        Analyze Image
                     </button>
 
                 </div>
 
 
 
-                <!-- RESULT PANEL -->
+                <!-- =================================================
+                     ANALYSIS RESULT
+                ================================================== -->
 
-                <div class="result-panel">
+                <div class="scanner-card result-card">
 
-                    <div class="result-header">
+                    <div class="card-header">
 
-                        <p class="tag">
-                            AI ANALYSIS
-                        </p>
+                        <div>
 
-                        <span id="analysisStatus">
-                            Waiting for image
-                        </span>
+                            <span class="card-label">
+                                AI RESULT
+                            </span>
+
+                            <h2>
+                                Analysis Result
+                            </h2>
+
+                        </div>
+
+                        <div class="card-icon">
+                            🤖
+                        </div>
 
                     </div>
 
 
-                    <!-- EMPTY RESULT -->
+                    <!-- Empty result -->
 
                     <div
                         id="emptyResult"
                         class="empty-result"
                     >
 
-                        <div>
-                            🔬
+                        <div class="result-empty-icon">
+                            🌿
                         </div>
 
-                        <h2>
-                            No Analysis Yet
-                        </h2>
+                        <h3>
+                            Waiting for an image
+                        </h3>
 
                         <p>
-                            Upload an image and click
-                            "Analyze Image" to see the result.
+                            Upload a plant image and start
+                            the analysis.
                         </p>
 
                     </div>
 
 
-                    <!-- ANALYSIS RESULT -->
+                    <!-- Analysis result -->
 
                     <div
                         id="analysisResult"
-                        class="analysis-result hidden"
+                        class="analysis-result"
+                        style="display: none;"
                     >
 
-                        <div class="result-icon">
-                            🐞
+                        <div class="analysis-status">
+
+                            <span
+                                id="analysisStatus"
+                                class="status-badge"
+                            >
+                                Analysis Complete
+                            </span>
+
                         </div>
 
-                        <p class="result-label">
-                            IDENTIFIED
-                        </p>
 
-                        <h2 id="identifiedName">
-                            —
-                        </h2>
+                        <div class="identified-result">
+
+                            <span class="result-label">
+                                IDENTIFIED AS
+                            </span>
+
+                            <h3 id="identifiedName">
+                                —
+                            </h3>
+
+                        </div>
 
 
-                        <!-- CONFIDENCE -->
+                        <!-- Confidence -->
 
                         <div class="confidence-section">
 
                             <div class="confidence-header">
 
                                 <span>
-                                    Model Confidence
+                                    Confidence
                                 </span>
 
                                 <strong id="confidenceValue">
-                                    —
+                                    0%
                                 </strong>
 
                             </div>
@@ -938,7 +775,6 @@
                                 <div
                                     id="confidenceProgress"
                                     class="confidence-progress"
-                                    style="width: 0%;"
                                 ></div>
 
                             </div>
@@ -946,11 +782,11 @@
                         </div>
 
 
-                        <!-- TYPE + RISK -->
+                        <!-- Result information -->
 
                         <div class="result-information">
 
-                            <div>
+                            <div class="result-info-box">
 
                                 <span>
                                     Type
@@ -963,7 +799,7 @@
                             </div>
 
 
-                            <div>
+                            <div class="result-info-box">
 
                                 <span>
                                     Risk
@@ -978,27 +814,27 @@
                         </div>
 
 
-                        <!-- DESCRIPTION -->
+                        <!-- Description -->
 
                         <div class="result-description">
 
-                            <h3>
-                                About this identification
-                            </h3>
+                            <span>
+                                DESCRIPTION
+                            </span>
 
                             <p id="resultDescription">
-                                The AI analysis result will
-                                appear here.
+                                —
                             </p>
 
                         </div>
 
 
                         <button
+                            type="button"
                             id="learnResult"
-                            class="learn-result-button"
+                            class="learn-button"
                         >
-                            📚 Open Encyclopedia
+                            View in Encyclopedia
                         </button>
 
                     </div>
@@ -1013,34 +849,51 @@
 
 
 
-    <!-- ================= FOOTER ================= -->
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
 
-    <footer>
+    <footer class="site-footer">
 
-        <div>
+        <div class="footer-content">
 
-            <strong>
-                🌱 Smart Greenhouse AI
-            </strong>
+            <div class="footer-brand">
+
+                <span class="logo-icon">
+                    🌱
+                </span>
+
+                <strong>
+                    Smart Greenhouse AI
+                </strong>
+
+            </div>
 
             <p>
-                Intelligent agriculture through AI
-                and computer vision.
+                Smart environmental monitoring,
+                crop knowledge and AI-assisted plant analysis.
             </p>
 
-        </div>
+            <span class="footer-copy">
+                © 2026 Smart Greenhouse AI
+            </span>
 
-        <p>
-            AI-powered • Data-driven • Sustainable
-        </p>
+        </div>
 
     </footer>
 
 
-    <!-- ================= JAVASCRIPT ================= -->
 
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <!-- Main JavaScript -->
     <script src="project.js"></script>
 
-</body>
+    <!-- Advanced Encyclopedia JavaScript -->
+    <script src="encyclopedia.js"></script>
 
+
+</body>
 </html>
