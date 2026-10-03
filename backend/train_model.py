@@ -1,324 +1,305 @@
 import os
+import random
 import numpy as np
 import tensorflow as tf
-from datasets import load_dataset, concatenate_datasets
-
 
 # ==========================================
-# SETTINGS
+# SMART GREENHOUSE AI
+# Local PlantVillage Training
 # ==========================================
 
 IMG_SIZE = 224
 BATCH_SIZE = 32
 EPOCHS = 5
 
-MAX_TRAIN_PER_CLASS = 1500
-MAX_TEST_PER_CLASS = 400
+TRAIN_PER_CLASS = 1500
+TEST_PER_CLASS = 400
 
-
-# ==========================================
-# PATHS
-# ==========================================
+DATASET_DIR = r"C:\Users\aksha\Desktop\PlantVillage\raw\color"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
 MODEL_DIR = os.path.join(BASE_DIR, "model")
+
 MODEL_PATH = os.path.join(MODEL_DIR, "crop_model.keras")
 LABELS_PATH = os.path.join(BASE_DIR, "labels.txt")
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-
 # ==========================================
-# CROP LABELS
+# CROP CLASSES
 # ==========================================
 
-CROP_TO_ID = {
-    "Tomato": 0,
-    "Pepper,_bell": 1,
-    "Potato": 2
-}
-
-ID_TO_CROP = {
-    0: "Tomato",
-    1: "Pepper",
-    2: "Potato"
-}
-
-
-# ==========================================
-# START
-# ==========================================
+CROP_NAMES = [
+    "Tomato",
+    "Pepper",
+    "Potato"
+]
 
 print("======================================")
 print("       SMART GREENHOUSE AI")
 print("======================================")
 
-print("\nLoading PlantVillage dataset...")
-print("The first download can take some time.\n")
+print("\nDataset:")
+print(DATASET_DIR)
+
+print("\nClasses:")
+for i, crop in enumerate(CROP_NAMES):
+    print(f"{i}: {crop}")
 
 
 # ==========================================
-# LOAD DATASET
+# FIND IMAGE FILES
 # ==========================================
 
-dataset = load_dataset(
-    "mohanty/PlantVillage"
-)
+def find_images_for_crop(crop_name):
 
-print("\nDataset loaded successfully!")
-print(dataset)
+    files = []
 
+    for folder in os.listdir(DATASET_DIR):
 
-# ==========================================
-# ADD CROP ID
-# ==========================================
+        folder_path = os.path.join(DATASET_DIR, folder)
 
-def add_crop_id(example):
-    crop = example["crop"]
+        if not os.path.isdir(folder_path):
+            continue
 
-    return {
-        "crop_id": CROP_TO_ID.get(crop, -1)
-    }
+        # Tomato___healthy, Tomato___Late_blight, etc.
+        if crop_name == "Tomato" and folder.startswith("Tomato___"):
+            pass
 
+        elif crop_name == "Pepper" and folder.startswith("Pepper,_bell___"):
+            pass
 
-print("\nFiltering Tomato, Pepper and Potato...")
+        elif crop_name == "Potato" and folder.startswith("Potato___"):
+            pass
 
+        else:
+            continue
 
-train_data = dataset["train"].map(
-    add_crop_id
-)
+        for filename in os.listdir(folder_path):
 
-test_data = dataset["test"].map(
-    add_crop_id
-)
+            if filename.lower().endswith(
+                (".jpg", ".jpeg", ".png")
+            ):
 
+                files.append(
+                    os.path.join(folder_path, filename)
+                )
 
-train_data = train_data.filter(
-    lambda x: x["crop_id"] >= 0
-)
-
-test_data = test_data.filter(
-    lambda x: x["crop_id"] >= 0
-)
-
-
-print(
-    "Filtered training images:",
-    len(train_data)
-)
-
-print(
-    "Filtered testing images:",
-    len(test_data)
-)
+    return files
 
 
 # ==========================================
-# BALANCE DATASET
+# COLLECT DATA
 # ==========================================
 
-def limit_per_class(data, maximum):
+print("\n======================================")
+print("       COLLECTING IMAGES")
+print("======================================")
 
-    parts = []
+all_images = []
+all_labels = []
 
-    for crop_id in range(3):
+for class_id, crop_name in enumerate(CROP_NAMES):
 
-        print(
-            f"Preparing class: {ID_TO_CROP[crop_id]}"
-        )
+    images = find_images_for_crop(crop_name)
 
-        crop_data = data.filter(
-            lambda x, cid=crop_id:
-            x["crop_id"] == cid
-        )
+    random.seed(42)
+    random.shuffle(images)
 
-        count = min(
-            len(crop_data),
-            maximum
-        )
+    print(
+        f"\n{crop_name}: {len(images)} images found"
+    )
 
-        crop_data = (
-            crop_data
-            .shuffle(seed=42)
-            .select(range(count))
-        )
+    # Limit dataset size
+    images = images[:TRAIN_PER_CLASS + TEST_PER_CLASS]
 
-        parts.append(crop_data)
+    split_point = min(TRAIN_PER_CLASS, len(images))
 
-    combined = concatenate_datasets(parts)
+    train_images = images[:split_point]
+    test_images = images[split_point:]
 
-    return combined.shuffle(seed=42)
+    # If there aren't enough test images,
+    # use the remaining images.
+    test_images = test_images[:TEST_PER_CLASS]
 
+    for image_path in train_images:
 
-print("\nCreating balanced training dataset...")
+        all_images.append(image_path)
+        all_labels.append(class_id)
 
+    print(
+        f"  Training images: {len(train_images)}"
+    )
 
-train_data = limit_per_class(
-    train_data,
-    MAX_TRAIN_PER_CLASS
-)
-
-test_data = limit_per_class(
-    test_data,
-    MAX_TEST_PER_CLASS
-)
-
-
-print(
-    "\nTraining images:",
-    len(train_data)
-)
-
-print(
-    "Testing images:",
-    len(test_data)
-)
+    print(
+        f"  Testing images: {len(test_images)}"
+    )
 
 
 # ==========================================
-# IMAGE PREPARATION
+# CREATE TRAIN / TEST LISTS
 # ==========================================
 
-def prepare_image(image):
+train_paths = []
+train_labels = []
 
-    # Convert image to RGB
-    image = image.convert("RGB")
+test_paths = []
+test_labels = []
 
-    # Convert PIL image to NumPy
-    image = np.array(image)
+for class_id, crop_name in enumerate(CROP_NAMES):
 
-    # Resize to MobileNetV2 input size
+    images = find_images_for_crop(crop_name)
+
+    random.seed(42)
+    random.shuffle(images)
+
+    images = images[:TRAIN_PER_CLASS + TEST_PER_CLASS]
+
+    train_images = images[:TRAIN_PER_CLASS]
+    test_images = images[
+        TRAIN_PER_CLASS:
+        TRAIN_PER_CLASS + TEST_PER_CLASS
+    ]
+
+    train_paths.extend(train_images)
+    train_labels.extend(
+        [class_id] * len(train_images)
+    )
+
+    test_paths.extend(test_images)
+    test_labels.extend(
+        [class_id] * len(test_images)
+    )
+
+
+# Shuffle training data
+combined = list(zip(train_paths, train_labels))
+random.seed(42)
+random.shuffle(combined)
+
+train_paths, train_labels = zip(*combined)
+
+train_paths = list(train_paths)
+train_labels = list(train_labels)
+
+
+# ==========================================
+# IMAGE LOADING
+# ==========================================
+
+def load_image(path, label):
+
+    image = tf.io.read_file(path)
+
+    image = tf.image.decode_image(
+        image,
+        channels=3,
+        expand_animations=False
+    )
+
+    image.set_shape([None, None, 3])
+
     image = tf.image.resize(
         image,
         (IMG_SIZE, IMG_SIZE)
     )
 
-    # Convert to float32
     image = tf.cast(
         image,
         tf.float32
     )
 
     # MobileNetV2 preprocessing
-    image = (
-        tf.keras.applications
-        .mobilenet_v2
-        .preprocess_input(image)
+    image = tf.keras.applications.mobilenet_v2.preprocess_input(
+        image
     )
 
-    return image.numpy()
+    return image, label
 
 
 # ==========================================
-# DATA GENERATOR
+# CREATE TF DATASETS
 # ==========================================
 
-def make_generator(data):
-
-    def generator():
-
-        indexes = np.arange(
-            len(data)
-        )
-
-        np.random.shuffle(indexes)
-
-        for start in range(
-            0,
-            len(indexes),
-            BATCH_SIZE
-        ):
-
-            batch_indexes = indexes[
-                start:start + BATCH_SIZE
-            ]
-
-            images = []
-            labels = []
-
-            for index in batch_indexes:
-
-                example = data[int(index)]
-
-                image = prepare_image(
-                    example["image"]
-                )
-
-                label = example["crop_id"]
-
-                images.append(image)
-                labels.append(label)
-
-            yield (
-                np.array(
-                    images,
-                    dtype=np.float32
-                ),
-                np.array(
-                    labels,
-                    dtype=np.int32
-                )
-            )
-
-    return generator
-
-
-# ==========================================
-# GENERATORS
-# ==========================================
-
-train_generator = make_generator(
-    train_data
+train_dataset = tf.data.Dataset.from_tensor_slices(
+    (train_paths, train_labels)
 )
 
-test_generator = make_generator(
-    test_data
+train_dataset = train_dataset.map(
+    load_image,
+    num_parallel_calls=tf.data.AUTOTUNE
+)
+
+train_dataset = train_dataset.shuffle(1000)
+
+train_dataset = train_dataset.batch(
+    BATCH_SIZE
+)
+
+train_dataset = train_dataset.prefetch(
+    tf.data.AUTOTUNE
 )
 
 
-train_steps = int(
-    np.ceil(
-        len(train_data) / BATCH_SIZE
-    )
+test_dataset = tf.data.Dataset.from_tensor_slices(
+    (test_paths, test_labels)
 )
 
-test_steps = int(
-    np.ceil(
-        len(test_data) / BATCH_SIZE
-    )
+test_dataset = test_dataset.map(
+    load_image,
+    num_parallel_calls=tf.data.AUTOTUNE
 )
 
+test_dataset = test_dataset.batch(
+    BATCH_SIZE
+)
 
-print("\nTraining steps:", train_steps)
-print("Testing steps:", test_steps)
+test_dataset = test_dataset.prefetch(
+    tf.data.AUTOTUNE
+)
 
 
 # ==========================================
-# CREATE MOBILENETV2
+# DATA SUMMARY
 # ==========================================
 
-print("\nCreating MobileNetV2 model...")
+print("\n======================================")
+print("           DATASET READY")
+print("======================================")
 
+print(
+    f"\nTotal training images: {len(train_paths)}"
+)
+
+print(
+    f"Total testing images: {len(test_paths)}"
+)
+
+print(
+    f"Batch size: {BATCH_SIZE}"
+)
+
+print(
+    f"Image size: {IMG_SIZE}x{IMG_SIZE}"
+)
+
+
+# ==========================================
+# CREATE MODEL
+# ==========================================
+
+print("\n======================================")
+print("       CREATING AI MODEL")
+print("======================================")
 
 base_model = tf.keras.applications.MobileNetV2(
-    input_shape=(
-        IMG_SIZE,
-        IMG_SIZE,
-        3
-    ),
+    input_shape=(IMG_SIZE, IMG_SIZE, 3),
     include_top=False,
     weights="imagenet"
 )
 
-
-# Freeze pretrained layers
 base_model.trainable = False
 
-
-# ==========================================
-# BUILD MODEL
-# ==========================================
 
 model = tf.keras.Sequential([
 
@@ -331,9 +312,7 @@ model = tf.keras.Sequential([
         activation="relu"
     ),
 
-    tf.keras.layers.Dropout(
-        0.3
-    ),
+    tf.keras.layers.Dropout(0.3),
 
     tf.keras.layers.Dense(
         3,
@@ -341,10 +320,6 @@ model = tf.keras.Sequential([
     )
 ])
 
-
-# ==========================================
-# COMPILE MODEL
-# ==========================================
 
 model.compile(
 
@@ -354,17 +329,15 @@ model.compile(
 
     loss="sparse_categorical_crossentropy",
 
-    metrics=[
-        "accuracy"
-    ]
+    metrics=["accuracy"]
 )
 
 
-print("\nModel created successfully!")
+model.summary()
 
 
 # ==========================================
-# TRAIN MODEL
+# TRAIN
 # ==========================================
 
 print("\n======================================")
@@ -374,15 +347,11 @@ print("======================================\n")
 
 history = model.fit(
 
-    train_generator(),
+    train_dataset,
 
-    steps_per_epoch=train_steps,
+    validation_data=test_dataset,
 
-    epochs=EPOCHS,
-
-    validation_data=test_generator(),
-
-    validation_steps=test_steps
+    epochs=EPOCHS
 )
 
 
@@ -395,14 +364,8 @@ print("             SAVING MODEL")
 print("======================================")
 
 
-model.save(
-    MODEL_PATH
-)
+model.save(MODEL_PATH)
 
-
-# ==========================================
-# SAVE LABELS
-# ==========================================
 
 with open(
     LABELS_PATH,
@@ -410,20 +373,9 @@ with open(
     encoding="utf-8"
 ) as file:
 
-    for crop_id in range(3):
+    for crop in CROP_NAMES:
+        file.write(crop + "\n")
 
-        file.write(
-            ID_TO_CROP[crop_id] + "\n"
-        )
-
-
-# ==========================================
-# FINISHED
-# ==========================================
-
-print("\n======================================")
-print("       TRAINING COMPLETED!")
-print("======================================")
 
 print("\nModel saved to:")
 print(MODEL_PATH)
@@ -431,12 +383,21 @@ print(MODEL_PATH)
 print("\nLabels saved to:")
 print(LABELS_PATH)
 
+
+# ==========================================
+# FINAL RESULT
+# ==========================================
+
+print("\n======================================")
+print("       TRAINING COMPLETED!")
+print("======================================")
+
 print("\nSupported crops:")
 
-for crop_id in range(3):
+for i, crop in enumerate(CROP_NAMES):
 
     print(
-        f"{crop_id}: {ID_TO_CROP[crop_id]}"
+        f"{i}: {crop}"
     )
 
-print("\nYour AI model is ready! 🚀")
+print("\nYour real AI crop model is ready! 🚀")

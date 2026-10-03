@@ -533,88 +533,78 @@ function initializeScanner() {
     }
 
 
-    // ----------------------------------------
-    // ANALYZE IMAGE
-    // ----------------------------------------
+// ----------------------------------------
+// ANALYZE IMAGE
+// ----------------------------------------
 
-    if (analyzeBtn) {
+if (analyzeBtn) {
 
-        analyzeBtn.addEventListener("click", async () => {
+    analyzeBtn.addEventListener("click", async () => {
 
-            if (!imageInput.files.length) {
-                alert("Please upload an image first.");
-                return;
+        if (!imageInput.files.length) {
+            alert("Please upload an image first.");
+            return;
+        }
+
+        analyzeBtn.disabled = true;
+        analyzeBtn.textContent = "Analyzing...";
+
+        try {
+
+            // Get the uploaded image
+            const imageFile = imageInput.files[0];
+
+            // Send image to Python AI backend
+            const formData = new FormData();
+            formData.append("file", imageFile);
+
+            const response = await fetch(
+                "http://127.0.0.1:8000/predict",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("AI server returned an error.");
             }
 
+            const result = await response.json();
 
-            analyzeBtn.disabled = true;
+            console.log("REAL AI RESULT:", result);
 
-            analyzeBtn.textContent =
-                "Analyzing...";
+            // Show result
+            displayAIResult(result);
 
+        } catch (error) {
 
-            await wait(1500);
+            console.error("AI Analysis Error:", error);
 
+            alert(
+                "Could not analyze the image. Make sure the Python AI server is running."
+            );
 
-            showDemoAnalysis();
-
+        } finally {
 
             analyzeBtn.disabled = false;
-
-            analyzeBtn.textContent =
-                "Analyze Image";
-        });
-    }
+            analyzeBtn.textContent = "Analyze Image";
+        }
+    });
 }
 
 
 // ============================================
-// DEMO AI ANALYSIS
+// REAL AI RESULT
 // ============================================
 
-function showDemoAnalysis() {
-
-    const results = [
-
-        {
-            name: "Aphid",
-            confidence: 92,
-            type: "Insect",
-            risk: "Moderate",
-            description:
-                "Possible aphid detection. Aphids commonly feed on plant sap and can affect new leaves."
-        },
-
-        {
-            name: "Whitefly",
-            confidence: 87,
-            type: "Insect",
-            risk: "Moderate",
-            description:
-                "Possible whitefly detection. Check the underside of leaves for small insects."
-        },
-
-        {
-            name: "Tomato",
-            confidence: 94,
-            type: "Crop",
-            risk: "Healthy",
-            description:
-                "Possible tomato crop detected. Current sample indicates a healthy crop."
-        }
-    ];
-
-
-    const result =
-        results[Math.floor(Math.random() * results.length)];
-
+function displayAIResult(result) {
 
     const analysisResult =
         document.getElementById("analysisResult");
 
     const emptyResult =
         document.getElementById("emptyResult");
-
 
     if (emptyResult) {
         emptyResult.classList.add("hidden");
@@ -624,7 +614,7 @@ function showDemoAnalysis() {
         analysisResult.classList.remove("hidden");
     }
 
-
+    // Crop predicted by the REAL ML model
     setText(
         "analysisStatus",
         "Analysis Complete"
@@ -632,7 +622,7 @@ function showDemoAnalysis() {
 
     setText(
         "identifiedName",
-        result.name
+        result.prediction
     );
 
     setText(
@@ -642,20 +632,26 @@ function showDemoAnalysis() {
 
     setText(
         "resultType",
-        result.type
+        "Crop"
     );
 
     setText(
         "resultRisk",
-        result.risk
+        result.confidence >= 80
+            ? "Healthy Match"
+            : "Low Confidence"
     );
 
     setText(
         "resultDescription",
-        result.description
+        "AI detected " +
+        result.prediction +
+        " with " +
+        result.confidence +
+        "% confidence."
     );
 
-
+    // Confidence progress bar
     const progress =
         document.getElementById("confidenceProgress");
 
@@ -664,8 +660,13 @@ function showDemoAnalysis() {
         progress.style.width =
             result.confidence + "%";
     }
-}
 
+    // Show probabilities in console for now
+    console.log(
+        "Crop probabilities:",
+        result.probabilities
+    );
+}
 
 // ============================================
 // RESET ANALYSIS
