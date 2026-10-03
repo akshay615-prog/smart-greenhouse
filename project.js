@@ -417,6 +417,7 @@ function filterEncyclopedia(search, category) {
 
 // ============================================
 // IMAGE SCANNER
+// REAL AI VERSION
 // ============================================
 
 function initializeScanner() {
@@ -440,14 +441,34 @@ function initializeScanner() {
         document.getElementById("analyzeBtn");
 
 
+    // Make sure scanner exists on this page
     if (!imageInput) {
+        console.log("AI Scanner: image input not found.");
         return;
     }
 
 
-    // ----------------------------------------
-    // IMAGE SELECT
-    // ----------------------------------------
+    // ========================================
+    // CHOOSE IMAGE / UPLOAD AREA
+    // ========================================
+
+    if (uploadArea) {
+
+        uploadArea.addEventListener("click", event => {
+
+            // Don't trigger twice when clicking the label
+            if (event.target.closest("label")) {
+                return;
+            }
+
+            imageInput.click();
+        });
+    }
+
+
+    // ========================================
+    // IMAGE SELECTED
+    // ========================================
 
     imageInput.addEventListener("change", event => {
 
@@ -457,45 +478,493 @@ function initializeScanner() {
             return;
         }
 
+
+        // Check image type
         if (!file.type.startsWith("image/")) {
 
             alert("Please select an image file.");
 
             imageInput.value = "";
+
             return;
         }
 
 
-        // Remove old object URL
+        // Remove previous object URL
         if (currentImageURL) {
+
             URL.revokeObjectURL(currentImageURL);
+
+            currentImageURL = null;
         }
 
 
+        // Create preview URL
         currentImageURL =
             URL.createObjectURL(file);
 
 
-        imagePreview.src =
-            currentImageURL;
+        // Show image preview
+        if (imagePreview) {
+
+            imagePreview.src =
+                currentImageURL;
+        }
 
 
+        // Hide upload area
         if (uploadArea) {
+
             uploadArea.classList.add("hidden");
         }
 
+
+        // Show preview container
         if (imagePreviewContainer) {
+
             imagePreviewContainer.classList.remove("hidden");
         }
 
+
+        // Enable analyze button
         if (analyzeBtn) {
+
             analyzeBtn.disabled = false;
         }
 
 
+        // Reset old result
         resetAnalysis();
+
+
+        console.log(
+            "Image selected:",
+            file.name
+        );
     });
 
+
+    // ========================================
+    // REMOVE IMAGE
+    // ========================================
+
+    if (removeImage) {
+
+        removeImage.addEventListener("click", () => {
+
+            if (currentImageURL) {
+
+                URL.revokeObjectURL(
+                    currentImageURL
+                );
+
+                currentImageURL = null;
+            }
+
+
+            imageInput.value = "";
+
+
+            if (imagePreview) {
+
+                imagePreview.src = "";
+            }
+
+
+            if (imagePreviewContainer) {
+
+                imagePreviewContainer.classList.add(
+                    "hidden"
+                );
+            }
+
+
+            if (uploadArea) {
+
+                uploadArea.classList.remove(
+                    "hidden"
+                );
+            }
+
+
+            if (analyzeBtn) {
+
+                analyzeBtn.disabled = true;
+
+                analyzeBtn.textContent =
+                    "Analyze Image";
+            }
+
+
+            resetAnalysis();
+        });
+    }
+
+
+    // ========================================
+    // ANALYZE IMAGE
+    // ========================================
+
+    if (analyzeBtn) {
+
+        analyzeBtn.addEventListener(
+            "click",
+            async () => {
+
+                const file =
+                    imageInput.files[0];
+
+
+                if (!file) {
+
+                    alert(
+                        "Please upload an image first."
+                    );
+
+                    return;
+                }
+
+
+                // Disable button while analyzing
+                analyzeBtn.disabled = true;
+
+                analyzeBtn.textContent =
+                    "Analyzing...";
+
+
+                setText(
+                    "analysisStatus",
+                    "AI analyzing image..."
+                );
+
+
+                try {
+
+                    // --------------------------------
+                    // SEND IMAGE TO PYTHON BACKEND
+                    // --------------------------------
+
+                    const formData =
+                        new FormData();
+
+                    formData.append(
+                        "file",
+                        file
+                    );
+
+
+                    console.log(
+                        "Sending image to AI backend..."
+                    );
+
+
+                    const response =
+                        await fetch(
+                            "http://127.0.0.1:8000/predict",
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    // --------------------------------
+                    // CHECK RESPONSE
+                    // --------------------------------
+
+                    if (!response.ok) {
+
+                        const errorText =
+                            await response.text();
+
+                        console.error(
+                            "Backend error:",
+                            errorText
+                        );
+
+                        throw new Error(
+                            "AI backend returned an error."
+                        );
+                    }
+
+
+                    // --------------------------------
+                    // GET REAL AI RESULT
+                    // --------------------------------
+
+                    const result =
+                        await response.json();
+
+
+                    console.log(
+                        "REAL AI RESULT:",
+                        result
+                    );
+
+
+                    // --------------------------------
+                    // DISPLAY RESULT
+                    // --------------------------------
+
+                    displayAIResult(result);
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AI Analysis Error:",
+                        error
+                    );
+
+
+                    setText(
+                        "analysisStatus",
+                        "Analysis Failed"
+                    );
+
+
+                    alert(
+                        "Could not analyze the image. Make sure the Python AI server is running."
+                    );
+                }
+
+
+                finally {
+
+                    analyzeBtn.disabled =
+                        false;
+
+                    analyzeBtn.textContent =
+                        "Analyze Image";
+                }
+            }
+        );
+    }
+
+
+    console.log(
+        "AI Scanner initialized successfully."
+    );
+}
+
+
+// ============================================
+// REAL AI RESULT
+// ============================================
+
+function displayAIResult(result) {
+
+    const analysisResult =
+        document.getElementById(
+            "analysisResult"
+        );
+
+    const emptyResult =
+        document.getElementById(
+            "emptyResult"
+        );
+
+
+    // Hide empty state
+    if (emptyResult) {
+
+        emptyResult.classList.add(
+            "hidden"
+        );
+    }
+
+
+    // Show result
+    if (analysisResult) {
+
+        analysisResult.classList.remove(
+            "hidden"
+        );
+    }
+
+
+    // ----------------------------------------
+    // GET REAL VALUES FROM PYTHON
+    // ----------------------------------------
+
+    const prediction =
+        result.prediction || "Unknown";
+
+    const confidence =
+        Number(result.confidence || 0);
+
+
+    // ----------------------------------------
+    // RESULT TEXT
+    // ----------------------------------------
+
+    setText(
+        "analysisStatus",
+        "Analysis Complete"
+    );
+
+
+    setText(
+        "identifiedName",
+        prediction
+    );
+
+
+    setText(
+        "confidenceValue",
+        confidence.toFixed(2) + "%"
+    );
+
+
+    setText(
+        "resultType",
+        "Crop"
+    );
+
+
+    // Confidence-based display only
+    if (confidence >= 80) {
+
+        setText(
+            "resultRisk",
+            "Strong Match"
+        );
+
+    } else if (confidence >= 50) {
+
+        setText(
+            "resultRisk",
+            "Possible Match"
+        );
+
+    } else {
+
+        setText(
+            "resultRisk",
+            "Low Confidence"
+        );
+    }
+
+
+    setText(
+        "resultDescription",
+        "The AI model detected " +
+        prediction +
+        " with " +
+        confidence.toFixed(2) +
+        "% confidence."
+    );
+
+
+    // ----------------------------------------
+    // CONFIDENCE BAR
+    // ----------------------------------------
+
+    const progress =
+        document.getElementById(
+            "confidenceProgress"
+        );
+
+
+    if (progress) {
+
+        progress.style.width =
+            Math.min(confidence, 100) + "%";
+    }
+
+
+    // ----------------------------------------
+    // PROBABILITIES
+    // ----------------------------------------
+
+    console.log(
+        "Crop probabilities:",
+        result.probabilities
+    );
+}
+
+
+// ============================================
+// RESET ANALYSIS
+// ============================================
+
+function resetAnalysis() {
+
+    const analysisResult =
+        document.getElementById(
+            "analysisResult"
+        );
+
+    const emptyResult =
+        document.getElementById(
+            "emptyResult"
+        );
+
+
+    if (analysisResult) {
+
+        analysisResult.classList.add(
+            "hidden"
+        );
+    }
+
+
+    if (emptyResult) {
+
+        emptyResult.classList.remove(
+            "hidden"
+        );
+    }
+
+
+    setText(
+        "analysisStatus",
+        "Waiting for image"
+    );
+
+
+    setText(
+        "identifiedName",
+        "—"
+    );
+
+
+    setText(
+        "confidenceValue",
+        "0%"
+    );
+
+
+    setText(
+        "resultType",
+        "—"
+    );
+
+
+    setText(
+        "resultRisk",
+        "—"
+    );
+
+
+    setText(
+        "resultDescription",
+        "Upload an image to begin analysis."
+    );
+
+
+    const progress =
+        document.getElementById(
+            "confidenceProgress"
+        );
+
+
+    if (progress) {
+
+        progress.style.width = "0%";
+    }
+}
 
     // ----------------------------------------
     // REMOVE IMAGE
@@ -606,68 +1075,210 @@ function displayAIResult(result) {
     const emptyResult =
         document.getElementById("emptyResult");
 
+    // Make sure result container exists
+    if (!analysisResult) {
+        console.error("analysisResult element not found");
+        return;
+    }
+
+    // Hide empty result message
     if (emptyResult) {
         emptyResult.classList.add("hidden");
     }
 
-    if (analysisResult) {
-        analysisResult.classList.remove("hidden");
-    }
+    // Get REAL AI values from Python
+    const crop =
+        result.crop ||
+        result.prediction ||
+        "Unknown";
 
-    // Crop predicted by the REAL ML model
-    setText(
-        "analysisStatus",
-        "Analysis Complete"
+    const confidence =
+        Number(result.confidence || 0);
+
+    const probabilities =
+        result.probabilities || {};
+
+    // Build probability section
+    let probabilityHTML = "";
+
+    Object.entries(probabilities).forEach(
+        ([name, value]) => {
+
+            const percentage =
+                Number(value);
+
+            probabilityHTML += `
+                <div style="
+                    margin: 14px 0;
+                    text-align: left;
+                ">
+
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 6px;
+                        font-weight: 600;
+                    ">
+                        <span>${name}</span>
+                        <span>
+                            ${percentage.toFixed(2)}%
+                        </span>
+                    </div>
+
+                    <div style="
+                        width: 100%;
+                        height: 8px;
+                        background: rgba(255,255,255,0.12);
+                        border-radius: 20px;
+                        overflow: hidden;
+                    ">
+
+                        <div style="
+                            width: ${Math.min(
+                                percentage,
+                                100
+                            )}%;
+                            height: 100%;
+                            background: #39e68c;
+                            border-radius: 20px;
+                            transition: width 0.8s ease;
+                        "></div>
+
+                    </div>
+
+                </div>
+            `;
+        }
     );
 
-    setText(
-        "identifiedName",
-        result.prediction
-    );
+    // Display complete AI result
+    analysisResult.innerHTML = `
 
-    setText(
-        "confidenceValue",
-        result.confidence + "%"
-    );
+        <div style="
+            margin-top: 20px;
+            padding: 28px;
+            border: 1px solid rgba(57, 230, 140, 0.35);
+            border-radius: 18px;
+            background: rgba(10, 35, 25, 0.85);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+        ">
 
-    setText(
-        "resultType",
-        "Crop"
-    );
+            <div style="
+                font-size: 42px;
+                margin-bottom: 10px;
+            ">
+                🌱
+            </div>
 
-    setText(
-        "resultRisk",
-        result.confidence >= 80
-            ? "Healthy Match"
-            : "Low Confidence"
-    );
+            <div style="
+                font-size: 14px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                opacity: 0.7;
+                margin-bottom: 8px;
+            ">
+                Analysis Complete
+            </div>
 
-    setText(
-        "resultDescription",
-        "AI detected " +
-        result.prediction +
-        " with " +
-        result.confidence +
-        "% confidence."
-    );
+            <div style="
+                font-size: 32px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            ">
+                ${crop}
+            </div>
 
-    // Confidence progress bar
-    const progress =
-        document.getElementById("confidenceProgress");
+            <div style="
+                font-size: 18px;
+                margin-bottom: 25px;
+            ">
+                Confidence:
+                <strong>
+                    ${confidence.toFixed(2)}%
+                </strong>
+            </div>
 
-    if (progress) {
+            <div style="
+                height: 10px;
+                width: 100%;
+                background: rgba(255,255,255,0.12);
+                border-radius: 20px;
+                overflow: hidden;
+                margin-bottom: 28px;
+            ">
 
-        progress.style.width =
-            result.confidence + "%";
-    }
+                <div style="
+                    width: ${Math.min(confidence, 100)}%;
+                    height: 100%;
+                    background: #39e68c;
+                    border-radius: 20px;
+                    transition: width 1s ease;
+                "></div>
 
-    // Show probabilities in console for now
+            </div>
+
+            <div style="
+                font-size: 18px;
+                font-weight: 700;
+                margin-bottom: 15px;
+                text-align: left;
+            ">
+                Prediction Probabilities
+            </div>
+
+            ${probabilityHTML}
+
+            <div style="
+                margin-top: 25px;
+                padding: 14px;
+                border-radius: 12px;
+                background: rgba(57, 230, 140, 0.08);
+                text-align: left;
+            ">
+
+                <strong>✓ AI Analysis Completed</strong>
+
+                <div style="
+                    margin-top: 6px;
+                    opacity: 0.75;
+                    font-size: 14px;
+                ">
+                    The AI model detected
+                    ${crop}
+                    with
+                    ${confidence.toFixed(2)}%
+                    confidence.
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    // Make sure result is visible
+    analysisResult.classList.remove("hidden");
+
+    // Debug information
     console.log(
-        "Crop probabilities:",
-        result.probabilities
+        "REAL AI RESULT:",
+        result
+    );
+
+    console.log(
+        "Crop:",
+        crop
+    );
+
+    console.log(
+        "Confidence:",
+        confidence
+    );
+
+    console.log(
+        "Probabilities:",
+        probabilities
     );
 }
-
 // ============================================
 // RESET ANALYSIS
 // ============================================
