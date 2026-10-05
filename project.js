@@ -1,11 +1,20 @@
-// ============================================
+// ============================================================
 // SMART GREENHOUSE AI
 // Main JavaScript
-// ============================================
+// Version: AI Scanner Upgrade
+// ============================================================
 
-// --------------------------------------------
+
+// ============================================================
+// CONFIGURATION
+// ============================================================
+
+const API_BASE_URL = "http://127.0.0.1:8000";
+
+
+// ============================================================
 // GREENHOUSE SENSOR DATA
-// --------------------------------------------
+// ============================================================
 
 let greenhouseData = {
     temperature: 24,
@@ -14,35 +23,43 @@ let greenhouseData = {
     waterTemperature: 22
 };
 
-// Outdoor weather is kept SEPARATE
-// from greenhouse sensor data.
+
+// Outdoor weather is separate from greenhouse sensors.
 let outdoorWeather = {
     temperature: null,
     humidity: null
 };
 
+
+// Scanner state
 let currentImageURL = null;
+let currentImageFile = null;
+let currentPrediction = null;
 
 
-// --------------------------------------------
+// ============================================================
 // DOM READY
-// --------------------------------------------
+// ============================================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeNavigation();
     initializeDashboard();
-    initializeEncyclopedia();
     initializeScanner();
     initializeWeather();
+
+    // Encyclopedia is now handled by encyclopedia.js
+    if (typeof initializeEncyclopedia === "function") {
+        initializeEncyclopedia();
+    }
 
     updateDashboard();
 });
 
 
-// ============================================
+// ============================================================
 // NAVIGATION
-// ============================================
+// ============================================================
 
 function initializeNavigation() {
 
@@ -65,86 +82,111 @@ function initializeNavigation() {
 
             link.classList.add("active");
 
-            const targetSection = document.getElementById(target);
+            const targetSection =
+                document.getElementById(target);
 
             if (targetSection) {
                 targetSection.classList.add("active-section");
+            }
+
+            // Scroll smoothly when needed
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             }
         });
     });
 }
 
 
-// ============================================
+// ============================================================
 // DASHBOARD
-// ============================================
+// ============================================================
 
 function initializeDashboard() {
 
-    const refreshBtn = document.getElementById("refreshBtn");
+    const refreshBtn =
+        document.getElementById("refreshBtn");
 
-    if (refreshBtn) {
-
-        refreshBtn.addEventListener("click", () => {
-
-            // Demo greenhouse sensor values
-            greenhouseData.temperature =
-                randomNumber(20, 35);
-
-            greenhouseData.humidity =
-                randomNumber(50, 90);
-
-            greenhouseData.soilMoisture =
-                randomNumber(20, 95);
-
-            greenhouseData.waterTemperature =
-                randomNumber(18, 28);
-
-            updateDashboard();
-        });
+    if (!refreshBtn) {
+        return;
     }
+
+    refreshBtn.addEventListener("click", () => {
+
+        greenhouseData.temperature =
+            randomNumber(20, 35);
+
+        greenhouseData.humidity =
+            randomNumber(50, 90);
+
+        greenhouseData.soilMoisture =
+            randomNumber(20, 95);
+
+        greenhouseData.waterTemperature =
+            randomNumber(18, 28);
+
+        updateDashboard();
+    });
 }
 
 
-// --------------------------------------------
+// ============================================================
 // UPDATE DASHBOARD
-// --------------------------------------------
+// ============================================================
 
 function updateDashboard() {
 
-    setText("temperature",
-        greenhouseData.temperature + "°C");
+    setText(
+        "temperature",
+        greenhouseData.temperature + "°C"
+    );
 
-    setText("humidity",
-        greenhouseData.humidity + "%");
+    setText(
+        "humidity",
+        greenhouseData.humidity + "%"
+    );
 
-    setText("soilMoisture",
-        greenhouseData.soilMoisture + "%");
+    setText(
+        "soilMoisture",
+        greenhouseData.soilMoisture + "%"
+    );
 
-    setText("waterTemperature",
-        greenhouseData.waterTemperature + "°C");
+    setText(
+        "waterTemperature",
+        greenhouseData.waterTemperature + "°C"
+    );
 
 
     // AI recommendation
-    const action = getAIAction();
+    setText(
+        "aiAction",
+        getAIAction()
+    );
 
-    setText("aiAction", action);
 
-
-    // Status text
+    // Sensor status
     setText(
         "tempStatus",
-        getTemperatureStatus(greenhouseData.temperature)
+        getTemperatureStatus(
+            greenhouseData.temperature
+        )
     );
 
     setText(
         "humidityStatus",
-        getHumidityStatus(greenhouseData.humidity)
+        getHumidityStatus(
+            greenhouseData.humidity
+        )
     );
 
     setText(
         "soilStatus",
-        getSoilStatus(greenhouseData.soilMoisture)
+        getSoilStatus(
+            greenhouseData.soilMoisture
+        )
     );
 
 
@@ -166,14 +208,18 @@ function updateDashboard() {
 }
 
 
-// ============================================
+// ============================================================
 // AI GREENHOUSE RECOMMENDATION
-// ============================================
+// ============================================================
 
 function getAIAction() {
 
-    const temperature = greenhouseData.temperature;
-    const soil = greenhouseData.soilMoisture;
+    const temperature =
+        greenhouseData.temperature;
+
+    const soil =
+        greenhouseData.soilMoisture;
+
 
     if (temperature >= 30 && soil <= 25) {
         return "FAN + PUMP";
@@ -191,9 +237,9 @@ function getAIAction() {
 }
 
 
-// ============================================
+// ============================================================
 // SENSOR STATUS
-// ============================================
+// ============================================================
 
 function getTemperatureStatus(temp) {
 
@@ -237,188 +283,9 @@ function getSoilStatus(soil) {
 }
 
 
-// ============================================
-// ENCYCLOPEDIA
-// ============================================
-
-const encyclopediaData = [
-
-    {
-        name: "Aphid",
-        type: "Insect",
-        category: "insect",
-        risk: "Moderate",
-        description:
-            "Small insects that feed on plant sap and can damage young leaves."
-    },
-
-    {
-        name: "Whitefly",
-        type: "Insect",
-        category: "insect",
-        risk: "Moderate",
-        description:
-            "Small flying insects that feed on plant sap and may spread plant diseases."
-    },
-
-    {
-        name: "Spider Mite",
-        type: "Insect",
-        category: "insect",
-        risk: "High",
-        description:
-            "Tiny pests that commonly attack leaves in warm and dry conditions."
-    },
-
-    {
-        name: "Tomato",
-        type: "Crop",
-        category: "crop",
-        risk: "Low",
-        description:
-            "Tomatoes generally grow well in warm conditions with sufficient sunlight and water."
-    },
-
-    {
-        name: "Wheat",
-        type: "Crop",
-        category: "crop",
-        risk: "Low",
-        description:
-            "Wheat prefers cooler growing conditions and moderate soil moisture."
-    },
-
-    {
-        name: "Rice",
-        type: "Crop",
-        category: "crop",
-        risk: "Low",
-        description:
-            "Rice generally requires warm temperatures and high water availability."
-    },
-
-    {
-        name: "Cucumber",
-        type: "Crop",
-        category: "crop",
-        risk: "Low",
-        description:
-            "Cucumber grows well in warm conditions with adequate moisture."
-    },
-
-    {
-        name: "Pepper",
-        type: "Crop",
-        category: "crop",
-        risk: "Low",
-        description:
-            "Peppers prefer warm temperatures and consistent moisture."
-    }
-];
-
-
-// --------------------------------------------
-// ENCYCLOPEDIA INITIALIZATION
-// --------------------------------------------
-
-function initializeEncyclopedia() {
-
-    const searchInput =
-        document.getElementById("encyclopediaSearch");
-
-    const categoryButtons =
-        document.querySelectorAll(".category-button");
-
-    if (searchInput) {
-
-        searchInput.addEventListener("input", () => {
-
-            filterEncyclopedia(
-                searchInput.value,
-                getSelectedCategory()
-            );
-        });
-    }
-
-
-    categoryButtons.forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            categoryButtons.forEach(btn => {
-                btn.classList.remove("active");
-            });
-
-            button.classList.add("active");
-
-            filterEncyclopedia(
-                searchInput ? searchInput.value : "",
-                button.dataset.category || "all"
-            );
-        });
-    });
-
-    filterEncyclopedia("", "all");
-}
-
-
-// --------------------------------------------
-// GET SELECTED CATEGORY
-// --------------------------------------------
-
-function getSelectedCategory() {
-
-    const activeButton =
-        document.querySelector(".category-button.active");
-
-    if (!activeButton) {
-        return "all";
-    }
-
-    return activeButton.dataset.category || "all";
-}
-
-
-// --------------------------------------------
-// FILTER ENCYCLOPEDIA
-// --------------------------------------------
-
-function filterEncyclopedia(search, category) {
-
-    const cards =
-        document.querySelectorAll(".knowledge-card");
-
-    const searchText =
-        search.toLowerCase().trim();
-
-    cards.forEach(card => {
-
-        const text =
-            card.textContent.toLowerCase();
-
-        const cardCategory =
-            card.dataset.category || "all";
-
-        const matchesSearch =
-            text.includes(searchText);
-
-        const matchesCategory =
-            category === "all" ||
-            cardCategory === category;
-
-        if (matchesSearch && matchesCategory) {
-            card.style.display = "";
-        } else {
-            card.style.display = "none";
-        }
-    });
-}
-
-
-// ============================================
-// IMAGE SCANNER
-// REAL AI VERSION
-// ============================================
+// ============================================================
+// AI PLANT SCANNER
+// ============================================================
 
 function initializeScanner() {
 
@@ -441,34 +308,14 @@ function initializeScanner() {
         document.getElementById("analyzeBtn");
 
 
-    // Make sure scanner exists on this page
     if (!imageInput) {
-        console.log("AI Scanner: image input not found.");
         return;
     }
 
 
-    // ========================================
-    // CHOOSE IMAGE / UPLOAD AREA
-    // ========================================
-
-    if (uploadArea) {
-
-        uploadArea.addEventListener("click", event => {
-
-            // Don't trigger twice when clicking the label
-            if (event.target.closest("label")) {
-                return;
-            }
-
-            imageInput.click();
-        });
-    }
-
-
-    // ========================================
-    // IMAGE SELECTED
-    // ========================================
+    // --------------------------------------------------------
+    // FILE INPUT
+    // --------------------------------------------------------
 
     imageInput.addEventListener("change", event => {
 
@@ -478,388 +325,926 @@ function initializeScanner() {
             return;
         }
 
-
-        // Check image type
-        if (!file.type.startsWith("image/")) {
-
-            alert("Please select an image file.");
-
-            imageInput.value = "";
-
-            return;
-        }
-
-
-        // Remove previous object URL
-        if (currentImageURL) {
-
-            URL.revokeObjectURL(currentImageURL);
-
-            currentImageURL = null;
-        }
-
-
-        // Create preview URL
-        currentImageURL =
-            URL.createObjectURL(file);
-
-
-        // Show image preview
-        if (imagePreview) {
-
-            imagePreview.src =
-                currentImageURL;
-        }
-
-
-        // Hide upload area
-        if (uploadArea) {
-
-            uploadArea.classList.add("hidden");
-        }
-
-
-        // Show preview container
-        if (imagePreviewContainer) {
-
-            imagePreviewContainer.classList.remove("hidden");
-        }
-
-
-        // Enable analyze button
-        if (analyzeBtn) {
-
-            analyzeBtn.disabled = false;
-        }
-
-
-        // Reset old result
-        resetAnalysis();
-
-
-        console.log(
-            "Image selected:",
-            file.name
-        );
+        handleSelectedImage(file);
     });
 
 
-    // ========================================
+    // --------------------------------------------------------
+    // DRAG AND DROP
+    // --------------------------------------------------------
+
+    if (uploadArea) {
+
+        uploadArea.addEventListener("dragover", event => {
+
+            event.preventDefault();
+
+            uploadArea.classList.add("drag-active");
+        });
+
+
+        uploadArea.addEventListener("dragleave", () => {
+
+            uploadArea.classList.remove("drag-active");
+        });
+
+
+        uploadArea.addEventListener("drop", event => {
+
+            event.preventDefault();
+
+            uploadArea.classList.remove("drag-active");
+
+            const file =
+                event.dataTransfer.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+
+                showScannerMessage(
+                    "Please drop a valid image file.",
+                    "error"
+                );
+
+                return;
+            }
+
+            // Put dropped file into input
+            try {
+
+                const dataTransfer =
+                    new DataTransfer();
+
+                dataTransfer.items.add(file);
+
+                imageInput.files =
+                    dataTransfer.files;
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not synchronize dropped file with input.",
+                    error
+                );
+            }
+
+            handleSelectedImage(file);
+        });
+    }
+
+
+    // --------------------------------------------------------
     // REMOVE IMAGE
-    // ========================================
+    // --------------------------------------------------------
 
     if (removeImage) {
 
         removeImage.addEventListener("click", () => {
 
-            if (currentImageURL) {
-
-                URL.revokeObjectURL(
-                    currentImageURL
-                );
-
-                currentImageURL = null;
-            }
-
-
-            imageInput.value = "";
-
-
-            if (imagePreview) {
-
-                imagePreview.src = "";
-            }
-
-
-            if (imagePreviewContainer) {
-
-                imagePreviewContainer.classList.add(
-                    "hidden"
-                );
-            }
-
-
-            if (uploadArea) {
-
-                uploadArea.classList.remove(
-                    "hidden"
-                );
-            }
-
-
-            if (analyzeBtn) {
-
-                analyzeBtn.disabled = true;
-
-                analyzeBtn.textContent =
-                    "Analyze Image";
-            }
-
-
-            resetAnalysis();
+            clearSelectedImage();
         });
     }
 
 
-    // ========================================
-    // ANALYZE IMAGE
-    // ========================================
+    // --------------------------------------------------------
+    // ANALYZE BUTTON
+    // --------------------------------------------------------
 
     if (analyzeBtn) {
 
-        analyzeBtn.addEventListener(
-            "click",
-            async () => {
+        analyzeBtn.addEventListener("click", async () => {
 
-                const file =
-                    imageInput.files[0];
+            if (!currentImageFile) {
 
-
-                if (!file) {
-
-                    alert(
-                        "Please upload an image first."
-                    );
-
-                    return;
-                }
-
-
-                // Disable button while analyzing
-                analyzeBtn.disabled = true;
-
-                analyzeBtn.textContent =
-                    "Analyzing...";
-
-
-                setText(
-                    "analysisStatus",
-                    "AI analyzing image..."
+                showScannerMessage(
+                    "Please select a plant image first.",
+                    "error"
                 );
 
-
-                try {
-
-                    // --------------------------------
-                    // SEND IMAGE TO PYTHON BACKEND
-                    // --------------------------------
-
-                    const formData =
-                        new FormData();
-
-                    formData.append(
-                        "file",
-                        file
-                    );
-
-
-                    console.log(
-                        "Sending image to AI backend..."
-                    );
-
-
-                    const response =
-                        await fetch(
-                            "http://127.0.0.1:8000/predict",
-                            {
-                                method: "POST",
-                                body: formData
-                            }
-                        );
-
-
-                    // --------------------------------
-                    // CHECK RESPONSE
-                    // --------------------------------
-
-                    if (!response.ok) {
-
-                        const errorText =
-                            await response.text();
-
-                        console.error(
-                            "Backend error:",
-                            errorText
-                        );
-
-                        throw new Error(
-                            "AI backend returned an error."
-                        );
-                    }
-
-
-                    // --------------------------------
-                    // GET REAL AI RESULT
-                    // --------------------------------
-
-                    const result =
-                        await response.json();
-
-
-                    console.log(
-                        "REAL AI RESULT:",
-                        result
-                    );
-
-
-                    // --------------------------------
-                    // DISPLAY RESULT
-                    // --------------------------------
-
-                    displayAIResult(result);
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "AI Analysis Error:",
-                        error
-                    );
-
-
-                    setText(
-                        "analysisStatus",
-                        "Analysis Failed"
-                    );
-
-
-                    alert(
-                        "Could not analyze the image. Make sure the Python AI server is running."
-                    );
-                }
-
-
-                finally {
-
-                    analyzeBtn.disabled =
-                        false;
-
-                    analyzeBtn.textContent =
-                        "Analyze Image";
-                }
+                return;
             }
+
+            await analyzePlantImage();
+        });
+    }
+}
+
+
+// ============================================================
+// HANDLE SELECTED IMAGE
+// ============================================================
+
+function handleSelectedImage(file) {
+
+    if (!file.type.startsWith("image/")) {
+
+        showScannerMessage(
+            "Please select a valid image file.",
+            "error"
         );
+
+        return;
     }
 
 
-    console.log(
-        "AI Scanner initialized successfully."
+    // Maximum frontend upload size: 10 MB
+    if (file.size > 10 * 1024 * 1024) {
+
+        showScannerMessage(
+            "Image is too large. Please choose an image under 10 MB.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentImageFile = file;
+
+
+    // Remove previous object URL
+    if (currentImageURL) {
+        URL.revokeObjectURL(currentImageURL);
+    }
+
+
+    currentImageURL =
+        URL.createObjectURL(file);
+
+
+    const imagePreview =
+        document.getElementById("imagePreview");
+
+    const uploadArea =
+        document.getElementById("uploadArea");
+
+    const imagePreviewContainer =
+        document.getElementById("imagePreviewContainer");
+
+    const analyzeBtn =
+        document.getElementById("analyzeBtn");
+
+
+    if (imagePreview) {
+
+        imagePreview.src =
+            currentImageURL;
+
+        imagePreview.onload = () => {
+
+            checkImageQuality(
+                imagePreview.naturalWidth,
+                imagePreview.naturalHeight,
+                file
+            );
+        };
+    }
+
+
+    if (uploadArea) {
+        uploadArea.classList.add("hidden");
+    }
+
+    if (imagePreviewContainer) {
+        imagePreviewContainer.classList.remove("hidden");
+    }
+
+    if (analyzeBtn) {
+        analyzeBtn.disabled = false;
+    }
+
+
+    resetAnalysis();
+
+    showScannerMessage(
+        "Image ready. Run AI analysis when you're ready.",
+        "info"
     );
 }
 
 
-// ============================================
-// REAL AI RESULT
-// ============================================
+// ============================================================
+// IMAGE QUALITY CHECK
+// ============================================================
 
-function displayAIResult(result) {
+function checkImageQuality(
+    width,
+    height,
+    file
+) {
 
-    const analysisResult =
-        document.getElementById(
-            "analysisResult"
-        );
-
-    const emptyResult =
-        document.getElementById(
-            "emptyResult"
-        );
+    let warnings = [];
 
 
-    // Hide empty state
-    if (emptyResult) {
+    if (width < 224 || height < 224) {
 
-        emptyResult.classList.add(
-            "hidden"
+        warnings.push(
+            "The image resolution is low."
         );
     }
 
 
-    // Show result
-    if (analysisResult) {
+    if (width < 160 || height < 160) {
 
-        analysisResult.classList.remove(
-            "hidden"
+        warnings.push(
+            "For better AI detection, use a clearer and larger image."
         );
     }
 
 
-    // ----------------------------------------
-    // GET REAL VALUES FROM PYTHON
-    // ----------------------------------------
+    if (file.size < 10 * 1024) {
 
-    const prediction =
-        result.prediction || "Unknown";
+        warnings.push(
+            "The image file is unusually small."
+        );
+    }
+
+
+    const qualityElement =
+        document.getElementById("imageQualityMessage");
+
+
+    if (qualityElement) {
+
+        if (warnings.length > 0) {
+
+            qualityElement.textContent =
+                warnings.join(" ");
+
+            qualityElement.classList.remove("hidden");
+
+        } else {
+
+            qualityElement.textContent =
+                "Image quality looks suitable for analysis.";
+
+            qualityElement.classList.remove("hidden");
+        }
+    }
+}
+
+
+// ============================================================
+// CLEAR SELECTED IMAGE
+// ============================================================
+
+function clearSelectedImage() {
+
+    if (currentImageURL) {
+
+        URL.revokeObjectURL(
+            currentImageURL
+        );
+
+        currentImageURL = null;
+    }
+
+
+    currentImageFile = null;
+    currentPrediction = null;
+
+
+    const imageInput =
+        document.getElementById("imageInput");
+
+    const imagePreview =
+        document.getElementById("imagePreview");
+
+    const uploadArea =
+        document.getElementById("uploadArea");
+
+    const imagePreviewContainer =
+        document.getElementById("imagePreviewContainer");
+
+    const analyzeBtn =
+        document.getElementById("analyzeBtn");
+
+
+    if (imageInput) {
+        imageInput.value = "";
+    }
+
+    if (imagePreview) {
+        imagePreview.src = "";
+    }
+
+    if (imagePreviewContainer) {
+        imagePreviewContainer.classList.add("hidden");
+    }
+
+    if (uploadArea) {
+        uploadArea.classList.remove("hidden");
+    }
+
+    if (analyzeBtn) {
+        analyzeBtn.disabled = true;
+    }
+
+
+    const qualityElement =
+        document.getElementById("imageQualityMessage");
+
+    if (qualityElement) {
+        qualityElement.textContent = "";
+        qualityElement.classList.add("hidden");
+    }
+
+
+    resetAnalysis();
+}
+
+
+// ============================================================
+// ANALYZE PLANT IMAGE
+// ============================================================
+
+async function analyzePlantImage() {
+
+    const analyzeBtn =
+        document.getElementById("analyzeBtn");
+
+
+    if (!currentImageFile) {
+
+        showScannerMessage(
+            "Please select an image first.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // UI: ANALYZING STATE
+    // --------------------------------------------------------
+
+    if (analyzeBtn) {
+
+        analyzeBtn.disabled = true;
+
+        analyzeBtn.dataset.originalText =
+            analyzeBtn.textContent;
+
+        analyzeBtn.textContent =
+            "Analyzing image...";
+    }
+
+
+    showAnalysisLoading();
+
+
+    try {
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "file",
+            currentImageFile
+        );
+
+
+        // ----------------------------------------------------
+        // REAL BACKEND REQUEST
+        // ----------------------------------------------------
+
+        const response =
+            await fetch(
+                `${API_BASE_URL}/predict`,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        // ----------------------------------------------------
+        // READ RESPONSE
+        // ----------------------------------------------------
+
+        let result = null;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "The AI server returned an invalid response."
+            );
+        }
+
+
+        if (!response.ok) {
+
+            const serverMessage =
+                result?.detail ||
+                result?.message ||
+                "AI prediction failed.";
+
+            throw new Error(
+                serverMessage
+            );
+        }
+
+
+        console.log(
+            "SMART GREENHOUSE AI RESULT:",
+            result
+        );
+
+
+        // ----------------------------------------------------
+        // NORMALIZE BACKEND RESPONSE
+        // ----------------------------------------------------
+
+        const normalized =
+            normalizePredictionResult(result);
+
+
+        currentPrediction =
+            normalized;
+
+
+        // ----------------------------------------------------
+        // SHOW RESULT ON WEBSITE
+        // ----------------------------------------------------
+
+        displayAIResult(
+            normalized
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "AI prediction error:",
+            error
+        );
+
+
+        showAnalysisError(
+            error.message ||
+            "Could not analyze the image."
+        );
+
+
+    } finally {
+
+        if (analyzeBtn) {
+
+            analyzeBtn.disabled = false;
+
+            analyzeBtn.textContent =
+                analyzeBtn.dataset.originalText ||
+                "Analyze Image";
+        }
+    }
+}
+
+
+// ============================================================
+// NORMALIZE AI RESULT
+// ============================================================
+
+function normalizePredictionResult(result) {
+
+    /*
+        The frontend supports several possible backend formats.
+
+        Example:
+
+        {
+            crop: "Tomato",
+            confidence: 94.2,
+            reliable: true
+        }
+
+        OR:
+
+        {
+            prediction: "Tomato",
+            confidence: 94.2,
+            reliable: true,
+            predictions: [...]
+        }
+    */
+
+
+    const crop =
+        result.crop ||
+        result.prediction ||
+        result.class_name ||
+        result.label ||
+        result.name ||
+        "Unknown";
+
 
     const confidence =
-        Number(result.confidence || 0);
+        Number(
+            result.confidence ??
+            result.probability ??
+            result.score ??
+            0
+        );
 
 
-    // ----------------------------------------
-    // RESULT TEXT
-    // ----------------------------------------
+    const reliable =
+        result.reliable ??
+        result.is_reliable ??
+        result.accepted ??
+        confidence >= 70;
+
+
+    const quality =
+        result.image_quality ||
+        result.quality ||
+        null;
+
+
+    const message =
+        result.message ||
+        result.reason ||
+        "";
+
+
+    let alternatives =
+        result.predictions ||
+        result.alternatives ||
+        result.top_predictions ||
+        [];
+
+
+    if (!Array.isArray(alternatives)) {
+        alternatives = [];
+    }
+
+
+    alternatives =
+        alternatives
+            .map(item => {
+
+                return {
+                    crop:
+                        item.crop ||
+                        item.prediction ||
+                        item.class_name ||
+                        item.label ||
+                        item.name ||
+                        "Unknown",
+
+                    confidence:
+                        Number(
+                            item.confidence ??
+                            item.probability ??
+                            item.score ??
+                            0
+                        )
+                };
+            })
+            .filter(item =>
+                item.crop !== "Unknown"
+            )
+            .sort(
+                (a, b) =>
+                    b.confidence -
+                    a.confidence
+            );
+
+
+    // If backend doesn't provide alternatives,
+    // create a single top prediction.
+    if (
+        alternatives.length === 0 &&
+        crop !== "Unknown"
+    ) {
+
+        alternatives.push({
+            crop: crop,
+            confidence: confidence
+        });
+    }
+
+
+    return {
+
+        crop: crop,
+
+        confidence:
+            clamp(confidence, 0, 100),
+
+        reliable:
+            Boolean(reliable),
+
+        quality:
+            quality,
+
+        message:
+            message,
+
+        alternatives:
+            alternatives
+    };
+}
+
+
+// ============================================================
+// SHOW ANALYSIS LOADING
+// ============================================================
+
+function showAnalysisLoading() {
+
+    const emptyResult =
+        document.getElementById("emptyResult");
+
+    const analysisResult =
+        document.getElementById("analysisResult");
+
+
+    if (emptyResult) {
+        emptyResult.classList.add("hidden");
+    }
+
+    if (analysisResult) {
+        analysisResult.classList.remove("hidden");
+    }
+
 
     setText(
         "analysisStatus",
-        "Analysis Complete"
+        "AI is analyzing your image..."
     );
-
 
     setText(
         "identifiedName",
-        prediction
+        "Analyzing..."
     );
-
 
     setText(
         "confidenceValue",
-        confidence.toFixed(2) + "%"
+        "—"
     );
-
 
     setText(
         "resultType",
-        "Crop"
+        "AI Detection"
+    );
+
+    setText(
+        "resultRisk",
+        "Checking..."
+    );
+
+    setText(
+        "resultDescription",
+        "Checking image quality, visual features and crop classification..."
     );
 
 
-    // Confidence-based display only
-    if (confidence >= 80) {
+    updateConfidenceBar(0);
 
-        setText(
-            "resultRisk",
-            "Strong Match"
+
+    const reliability =
+        document.getElementById(
+            "reliabilityStatus"
         );
 
-    } else if (confidence >= 50) {
+    if (reliability) {
 
-        setText(
-            "resultRisk",
-            "Possible Match"
+        reliability.textContent =
+            "Analyzing reliability...";
+
+        reliability.className =
+            "reliability-status";
+    }
+
+
+    hideElement(
+        "cropInfoButton"
+    );
+
+    hideElement(
+        "viewCropInfo"
+    );
+}
+
+
+// ============================================================
+// DISPLAY AI RESULT
+// ============================================================
+
+function displayAIResult(result) {
+
+    const emptyResult =
+        document.getElementById("emptyResult");
+
+    const analysisResult =
+        document.getElementById("analysisResult");
+
+
+    if (emptyResult) {
+        emptyResult.classList.add("hidden");
+    }
+
+    if (analysisResult) {
+        analysisResult.classList.remove("hidden");
+    }
+
+
+    const confidence =
+        result.confidence;
+
+
+    const crop =
+        result.crop;
+
+
+    // --------------------------------------------------------
+    // STATUS
+    // --------------------------------------------------------
+
+    setText(
+        "analysisStatus",
+        result.reliable
+            ? "Analysis Complete"
+            : "Low Reliability — Review Image"
+    );
+
+
+    // --------------------------------------------------------
+    // CROP NAME
+    // --------------------------------------------------------
+
+    setText(
+        "identifiedName",
+        crop
+    );
+
+
+    // --------------------------------------------------------
+    // CONFIDENCE
+    // --------------------------------------------------------
+
+    setText(
+        "confidenceValue",
+        formatConfidence(confidence)
+    );
+
+
+    updateConfidenceBar(
+        confidence
+    );
+
+
+    // --------------------------------------------------------
+    // RESULT TYPE
+    // --------------------------------------------------------
+
+    setText(
+        "resultType",
+        "Crop Detection"
+    );
+
+
+    // --------------------------------------------------------
+    // RELIABILITY
+    // --------------------------------------------------------
+
+    const reliability =
+        document.getElementById(
+            "reliabilityStatus"
         );
 
+
+    if (reliability) {
+
+        if (result.reliable) {
+
+            reliability.textContent =
+                "✓ Reliable detection";
+
+            reliability.className =
+                "reliability-status reliable";
+
+        } else {
+
+            reliability.textContent =
+                "⚠ Detection needs a clearer image";
+
+            reliability.className =
+                "reliability-status uncertain";
+        }
+    }
+
+
+    // --------------------------------------------------------
+    // RISK / QUALITY
+    // --------------------------------------------------------
+
+    let resultRisk =
+        "Detection confidence";
+
+    if (confidence >= 90) {
+        resultRisk = "Very strong match";
+    } else if (confidence >= 75) {
+        resultRisk = "Strong match";
+    } else if (confidence >= 60) {
+        resultRisk = "Moderate match";
     } else {
+        resultRisk = "Weak match";
+    }
 
-        setText(
-            "resultRisk",
-            "Low Confidence"
-        );
+
+    setText(
+        "resultRisk",
+        resultRisk
+    );
+
+
+    // --------------------------------------------------------
+    // DESCRIPTION
+    // --------------------------------------------------------
+
+    let description =
+        `The AI identified this image as ${crop} ` +
+        `with ${formatConfidence(confidence)} confidence.`;
+
+
+    if (!result.reliable) {
+
+        description +=
+            " The result should be treated as uncertain. " +
+            "Try another clear image showing the plant or leaf clearly.";
+    }
+
+
+    if (result.message) {
+
+        description +=
+            ` ${result.message}`;
+    }
+
+
+    if (result.quality) {
+
+        description +=
+            ` Image quality: ${formatQuality(result.quality)}.`;
     }
 
 
     setText(
         "resultDescription",
-        "The AI model detected " +
-        prediction +
-        " with " +
-        confidence.toFixed(2) +
-        "% confidence."
+        description
     );
 
 
-    // ----------------------------------------
-    // CONFIDENCE BAR
-    // ----------------------------------------
+    // --------------------------------------------------------
+    // ALTERNATIVE PREDICTIONS
+    // --------------------------------------------------------
+
+    renderAlternativePredictions(
+        result.alternatives,
+        crop
+    );
+
+
+    // --------------------------------------------------------
+    // CROP INFORMATION BUTTON
+    // --------------------------------------------------------
+
+    if (
+        result.reliable &&
+        isSupportedCrop(crop)
+    ) {
+
+        showCropInformationButton(
+            crop
+        );
+
+    } else {
+
+        hideElement(
+            "cropInfoButton"
+        );
+
+        hideElement(
+            "viewCropInfo"
+        );
+    }
+}
+
+
+// ============================================================
+// CONFIDENCE BAR
+// ============================================================
+
+function updateConfidenceBar(value) {
 
     const progress =
         document.getElementById(
@@ -867,27 +1252,333 @@ function displayAIResult(result) {
         );
 
 
-    if (progress) {
-
-        progress.style.width =
-            Math.min(confidence, 100) + "%";
+    if (!progress) {
+        return;
     }
 
 
-    // ----------------------------------------
-    // PROBABILITIES
-    // ----------------------------------------
+    const safeValue =
+        clamp(
+            Number(value) || 0,
+            0,
+            100
+        );
 
-    console.log(
-        "Crop probabilities:",
-        result.probabilities
+
+    progress.style.width =
+        `${safeValue}%`;
+
+
+    progress.setAttribute(
+        "aria-valuenow",
+        safeValue
     );
 }
 
 
-// ============================================
+// ============================================================
+// ALTERNATIVE PREDICTIONS
+// ============================================================
+
+function renderAlternativePredictions(
+    predictions,
+    detectedCrop
+) {
+
+    const container =
+        document.getElementById(
+            "alternativePredictions"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    const alternatives =
+        predictions
+            .filter(item =>
+                normalizeCropName(item.crop) !==
+                normalizeCropName(detectedCrop)
+            )
+            .slice(0, 3);
+
+
+    if (alternatives.length === 0) {
+
+        container.classList.add("hidden");
+
+        return;
+    }
+
+
+    container.classList.remove("hidden");
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "alternative-title";
+
+    title.textContent =
+        "Other possible matches";
+
+    container.appendChild(title);
+
+
+    alternatives.forEach(item => {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "alternative-prediction";
+
+
+        const name =
+            document.createElement("span");
+
+        name.textContent =
+            item.crop;
+
+
+        const confidence =
+            document.createElement("span");
+
+        confidence.textContent =
+            formatConfidence(
+                item.confidence
+            );
+
+
+        row.appendChild(name);
+        row.appendChild(confidence);
+
+        container.appendChild(row);
+    });
+}
+
+
+// ============================================================
+// SHOW CROP INFORMATION BUTTON
+// ============================================================
+
+function showCropInformationButton(crop) {
+
+    const button =
+        document.getElementById(
+            "cropInfoButton"
+        ) ||
+        document.getElementById(
+            "viewCropInfo"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    button.classList.remove("hidden");
+
+
+    button.textContent =
+        `View complete ${crop} guide`;
+
+
+    // Avoid duplicate event listeners
+    button.onclick = () => {
+
+        openCropEncyclopedia(
+            crop
+        );
+    };
+}
+
+
+// ============================================================
+// OPEN CROP ENCYCLOPEDIA
+// ============================================================
+
+function openCropEncyclopedia(crop) {
+
+    /*
+        encyclopedia.js will contain the detailed crop data.
+
+        We expose the selected crop through a global event so
+        encyclopedia.js can open the correct information.
+    */
+
+    const normalized =
+        normalizeCropName(crop);
+
+
+    // Try a direct function if encyclopedia.js provides one.
+    if (
+        typeof window.openCropGuide ===
+        "function"
+    ) {
+
+        window.openCropGuide(
+            normalized
+        );
+
+        return;
+    }
+
+
+    if (
+        typeof window.showCropInfo ===
+        "function"
+    ) {
+
+        window.showCropInfo(
+            normalized
+        );
+
+        return;
+    }
+
+
+    // Fallback: send custom event.
+    window.dispatchEvent(
+        new CustomEvent(
+            "smartGreenhouse:openCrop",
+            {
+                detail: {
+                    crop: normalized
+                }
+            }
+        )
+    );
+
+
+    // Try opening encyclopedia navigation section.
+    const encyclopediaSection =
+        document.getElementById(
+            "encyclopedia"
+        );
+
+
+    if (encyclopediaSection) {
+
+        document.querySelectorAll(
+            ".page-section"
+        ).forEach(section => {
+
+            section.classList.remove(
+                "active-section"
+            );
+        });
+
+
+        encyclopediaSection.classList.add(
+            "active-section"
+        );
+    }
+}
+
+
+// ============================================================
+// SCANNER ERROR
+// ============================================================
+
+function showAnalysisError(message) {
+
+    const emptyResult =
+        document.getElementById(
+            "emptyResult"
+        );
+
+    const analysisResult =
+        document.getElementById(
+            "analysisResult"
+        );
+
+
+    if (emptyResult) {
+        emptyResult.classList.add("hidden");
+    }
+
+    if (analysisResult) {
+        analysisResult.classList.remove("hidden");
+    }
+
+
+    setText(
+        "analysisStatus",
+        "Analysis Failed"
+    );
+
+
+    setText(
+        "identifiedName",
+        "Unable to identify"
+    );
+
+
+    setText(
+        "confidenceValue",
+        "—"
+    );
+
+
+    setText(
+        "resultType",
+        "AI Error"
+    );
+
+
+    setText(
+        "resultRisk",
+        "Try again"
+    );
+
+
+    setText(
+        "resultDescription",
+        message ||
+        "The image could not be analyzed."
+    );
+
+
+    updateConfidenceBar(0);
+
+
+    const reliability =
+        document.getElementById(
+            "reliabilityStatus"
+        );
+
+
+    if (reliability) {
+
+        reliability.textContent =
+            "⚠ Analysis unavailable";
+
+        reliability.className =
+            "reliability-status uncertain";
+    }
+
+
+    hideElement(
+        "cropInfoButton"
+    );
+
+    hideElement(
+        "viewCropInfo"
+    );
+}
+
+
+// ============================================================
 // RESET ANALYSIS
-// ============================================
+// ============================================================
 
 function resetAnalysis() {
 
@@ -903,18 +1594,11 @@ function resetAnalysis() {
 
 
     if (analysisResult) {
-
-        analysisResult.classList.add(
-            "hidden"
-        );
+        analysisResult.classList.add("hidden");
     }
 
-
     if (emptyResult) {
-
-        emptyResult.classList.remove(
-            "hidden"
-        );
+        emptyResult.classList.remove("hidden");
     }
 
 
@@ -954,408 +1638,121 @@ function resetAnalysis() {
     );
 
 
-    const progress =
+    updateConfidenceBar(0);
+
+
+    const reliability =
         document.getElementById(
-            "confidenceProgress"
+            "reliabilityStatus"
         );
 
 
-    if (progress) {
+    if (reliability) {
 
-        progress.style.width = "0%";
-    }
-}
+        reliability.textContent =
+            "Waiting for analysis";
 
-    // ----------------------------------------
-    // REMOVE IMAGE
-    // ----------------------------------------
-
-    if (removeImage) {
-
-        removeImage.addEventListener("click", () => {
-
-            if (currentImageURL) {
-                URL.revokeObjectURL(currentImageURL);
-                currentImageURL = null;
-            }
-
-            imageInput.value = "";
-
-            if (imagePreview) {
-                imagePreview.src = "";
-            }
-
-            if (imagePreviewContainer) {
-                imagePreviewContainer.classList.add("hidden");
-            }
-
-            if (uploadArea) {
-                uploadArea.classList.remove("hidden");
-            }
-
-            if (analyzeBtn) {
-                analyzeBtn.disabled = true;
-            }
-
-            resetAnalysis();
-        });
+        reliability.className =
+            "reliability-status";
     }
 
 
-// ----------------------------------------
-// ANALYZE IMAGE
-// ----------------------------------------
+    const alternatives =
+        document.getElementById(
+            "alternativePredictions"
+        );
 
-if (analyzeBtn) {
 
-    analyzeBtn.addEventListener("click", async () => {
+    if (alternatives) {
 
-        if (!imageInput.files.length) {
-            alert("Please upload an image first.");
-            return;
-        }
+        alternatives.innerHTML = "";
 
-        analyzeBtn.disabled = true;
-        analyzeBtn.textContent = "Analyzing...";
+        alternatives.classList.add(
+            "hidden"
+        );
+    }
 
-        try {
 
-            // Get the uploaded image
-            const imageFile = imageInput.files[0];
+    hideElement(
+        "cropInfoButton"
+    );
 
-            // Send image to Python AI backend
-            const formData = new FormData();
-            formData.append("file", imageFile);
-
-            const response = await fetch(
-                "http://127.0.0.1:8000/predict",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error("AI server returned an error.");
-            }
-
-            const result = await response.json();
-
-            console.log("REAL AI RESULT:", result);
-
-            // Show result
-            displayAIResult(result);
-
-        } catch (error) {
-
-            console.error("AI Analysis Error:", error);
-
-            alert(
-                "Could not analyze the image. Make sure the Python AI server is running."
-            );
-
-        } finally {
-
-            analyzeBtn.disabled = false;
-            analyzeBtn.textContent = "Analyze Image";
-        }
-    });
+    hideElement(
+        "viewCropInfo"
+    );
 }
 
 
-// ============================================
-// REAL AI RESULT
-// ============================================
+// ============================================================
+// SCANNER MESSAGE
+// ============================================================
 
-function displayAIResult(result) {
+function showScannerMessage(
+    message,
+    type = "info"
+) {
 
-    const analysisResult =
-        document.getElementById("analysisResult");
+    const messageElement =
+        document.getElementById(
+            "scannerMessage"
+        );
 
-    const emptyResult =
-        document.getElementById("emptyResult");
 
-    // Make sure result container exists
-    if (!analysisResult) {
-        console.error("analysisResult element not found");
+    if (!messageElement) {
         return;
     }
 
-    // Hide empty result message
-    if (emptyResult) {
-        emptyResult.classList.add("hidden");
-    }
 
-    // Get REAL AI values from Python
-    const crop =
-        result.crop ||
-        result.prediction ||
-        "Unknown";
+    messageElement.textContent =
+        message;
 
-    const confidence =
-        Number(result.confidence || 0);
 
-    const probabilities =
-        result.probabilities || {};
+    messageElement.className =
+        `scanner-message ${type}`;
 
-    // Build probability section
-    let probabilityHTML = "";
 
-    Object.entries(probabilities).forEach(
-        ([name, value]) => {
-
-            const percentage =
-                Number(value);
-
-            probabilityHTML += `
-                <div style="
-                    margin: 14px 0;
-                    text-align: left;
-                ">
-
-                    <div style="
-                        display: flex;
-                        justify-content: space-between;
-                        margin-bottom: 6px;
-                        font-weight: 600;
-                    ">
-                        <span>${name}</span>
-                        <span>
-                            ${percentage.toFixed(2)}%
-                        </span>
-                    </div>
-
-                    <div style="
-                        width: 100%;
-                        height: 8px;
-                        background: rgba(255,255,255,0.12);
-                        border-radius: 20px;
-                        overflow: hidden;
-                    ">
-
-                        <div style="
-                            width: ${Math.min(
-                                percentage,
-                                100
-                            )}%;
-                            height: 100%;
-                            background: #39e68c;
-                            border-radius: 20px;
-                            transition: width 0.8s ease;
-                        "></div>
-
-                    </div>
-
-                </div>
-            `;
-        }
-    );
-
-    // Display complete AI result
-    analysisResult.innerHTML = `
-
-        <div style="
-            margin-top: 20px;
-            padding: 28px;
-            border: 1px solid rgba(57, 230, 140, 0.35);
-            border-radius: 18px;
-            background: rgba(10, 35, 25, 0.85);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.25);
-        ">
-
-            <div style="
-                font-size: 42px;
-                margin-bottom: 10px;
-            ">
-                🌱
-            </div>
-
-            <div style="
-                font-size: 14px;
-                text-transform: uppercase;
-                letter-spacing: 2px;
-                opacity: 0.7;
-                margin-bottom: 8px;
-            ">
-                Analysis Complete
-            </div>
-
-            <div style="
-                font-size: 32px;
-                font-weight: 700;
-                margin-bottom: 8px;
-            ">
-                ${crop}
-            </div>
-
-            <div style="
-                font-size: 18px;
-                margin-bottom: 25px;
-            ">
-                Confidence:
-                <strong>
-                    ${confidence.toFixed(2)}%
-                </strong>
-            </div>
-
-            <div style="
-                height: 10px;
-                width: 100%;
-                background: rgba(255,255,255,0.12);
-                border-radius: 20px;
-                overflow: hidden;
-                margin-bottom: 28px;
-            ">
-
-                <div style="
-                    width: ${Math.min(confidence, 100)}%;
-                    height: 100%;
-                    background: #39e68c;
-                    border-radius: 20px;
-                    transition: width 1s ease;
-                "></div>
-
-            </div>
-
-            <div style="
-                font-size: 18px;
-                font-weight: 700;
-                margin-bottom: 15px;
-                text-align: left;
-            ">
-                Prediction Probabilities
-            </div>
-
-            ${probabilityHTML}
-
-            <div style="
-                margin-top: 25px;
-                padding: 14px;
-                border-radius: 12px;
-                background: rgba(57, 230, 140, 0.08);
-                text-align: left;
-            ">
-
-                <strong>✓ AI Analysis Completed</strong>
-
-                <div style="
-                    margin-top: 6px;
-                    opacity: 0.75;
-                    font-size: 14px;
-                ">
-                    The AI model detected
-                    ${crop}
-                    with
-                    ${confidence.toFixed(2)}%
-                    confidence.
-                </div>
-
-            </div>
-
-        </div>
-    `;
-
-    // Make sure result is visible
-    analysisResult.classList.remove("hidden");
-
-    // Debug information
-    console.log(
-        "REAL AI RESULT:",
-        result
-    );
-
-    console.log(
-        "Crop:",
-        crop
-    );
-
-    console.log(
-        "Confidence:",
-        confidence
-    );
-
-    console.log(
-        "Probabilities:",
-        probabilities
+    messageElement.classList.remove(
+        "hidden"
     );
 }
-// ============================================
-// RESET ANALYSIS
-// ============================================
-
-function resetAnalysis() {
-
-    const analysisResult =
-        document.getElementById("analysisResult");
-
-    const emptyResult =
-        document.getElementById("emptyResult");
 
 
-    if (analysisResult) {
-        analysisResult.classList.add("hidden");
-    }
-
-    if (emptyResult) {
-        emptyResult.classList.remove("hidden");
-    }
-
-
-    setText("analysisStatus", "Waiting for image");
-
-    setText("identifiedName", "—");
-
-    setText("confidenceValue", "0%");
-
-    setText("resultType", "—");
-
-    setText("resultRisk", "—");
-
-    setText(
-        "resultDescription",
-        "Upload an image to begin analysis."
-    );
-
-
-    const progress =
-        document.getElementById("confidenceProgress");
-
-    if (progress) {
-        progress.style.width = "0%";
-    }
-}
-
-
-// ============================================
+// ============================================================
 // WEATHER
-// ============================================
+// ============================================================
 
 function initializeWeather() {
 
     getOutdoorWeather();
 
 
-    // Refresh outdoor weather every 10 minutes
+    // Refresh weather every 10 minutes.
     setInterval(() => {
+
         getOutdoorWeather();
+
     }, 10 * 60 * 1000);
 
 
     const cropSelect =
-        document.getElementById("cropSelect");
+        document.getElementById(
+            "cropSelect"
+        );
+
 
     if (cropSelect) {
 
-        cropSelect.addEventListener("change", () => {
-            updateCropWarning();
-        });
+        cropSelect.addEventListener(
+            "change",
+            updateCropWarning
+        );
     }
 }
 
 
-// ============================================
+// ============================================================
 // GET OUTDOOR WEATHER
-// ============================================
+// ============================================================
 
 function getOutdoorWeather() {
 
@@ -1379,7 +1776,10 @@ function getOutdoorWeather() {
             const longitude =
                 position.coords.longitude;
 
-            fetchWeather(latitude, longitude);
+            fetchWeather(
+                latitude,
+                longitude
+            );
         },
 
         () => {
@@ -1398,11 +1798,14 @@ function getOutdoorWeather() {
 }
 
 
-// ============================================
+// ============================================================
 // FETCH WEATHER
-// ============================================
+// ============================================================
 
-async function fetchWeather(latitude, longitude) {
+async function fetchWeather(
+    latitude,
+    longitude
+) {
 
     const url =
         `https://api.open-meteo.com/v1/forecast?` +
@@ -1417,8 +1820,12 @@ async function fetchWeather(latitude, longitude) {
         const response =
             await fetch(url);
 
+
         if (!response.ok) {
-            throw new Error("Weather request failed.");
+
+            throw new Error(
+                "Weather request failed."
+            );
         }
 
 
@@ -1429,6 +1836,7 @@ async function fetchWeather(latitude, longitude) {
         outdoorWeather.temperature =
             data.current.temperature_2m;
 
+
         outdoorWeather.humidity =
             data.current.relative_humidity_2m;
 
@@ -1437,9 +1845,14 @@ async function fetchWeather(latitude, longitude) {
 
         updateCropWarning();
 
+
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Weather error:",
+            error
+        );
+
 
         showWeatherError(
             "Weather unavailable"
@@ -1448,9 +1861,9 @@ async function fetchWeather(latitude, longitude) {
 }
 
 
-// ============================================
-// UPDATE WEATHER UI
-// ============================================
+// ============================================================
+// WEATHER UI
+// ============================================================
 
 function updateWeatherUI() {
 
@@ -1474,16 +1887,13 @@ function updateWeatherUI() {
 }
 
 
-// ============================================
-// WEATHER ERROR
-// ============================================
-
 function showWeatherError(message) {
 
     setText(
         "locationName",
         "Location unavailable"
     );
+
 
     setText(
         "weatherText",
@@ -1492,60 +1902,83 @@ function showWeatherError(message) {
 }
 
 
-// ============================================
+// ============================================================
 // CROP DATABASE
-// ============================================
+// ============================================================
 
 const cropDatabase = {
 
     tomato: {
+
         min: 18,
         max: 30,
+
         idealMin: 20,
         idealMax: 27
     },
 
     wheat: {
+
         min: 10,
         max: 25,
+
         idealMin: 15,
         idealMax: 22
     },
 
     rice: {
+
         min: 20,
         max: 35,
+
         idealMin: 25,
         idealMax: 32
     },
 
     cucumber: {
+
         min: 18,
         max: 32,
+
         idealMin: 21,
         idealMax: 30
     },
 
     pepper: {
+
         min: 18,
         max: 32,
+
         idealMin: 21,
         idealMax: 29
+    },
+
+    potato: {
+
+        min: 10,
+        max: 25,
+
+        idealMin: 15,
+        idealMax: 21
     }
 };
 
 
-// ============================================
+// ============================================================
 // CROP WARNING
-// ============================================
+// ============================================================
 
 function updateCropWarning() {
 
     const cropSelect =
-        document.getElementById("cropSelect");
+        document.getElementById(
+            "cropSelect"
+        );
 
     const cropWarning =
-        document.getElementById("cropWarning");
+        document.getElementById(
+            "cropWarning"
+        );
 
 
     if (!cropSelect || !cropWarning) {
@@ -1559,14 +1992,23 @@ function updateCropWarning() {
 
     if (!crop) {
 
-        cropWarning.classList.add("hidden");
+        cropWarning.classList.add(
+            "hidden"
+        );
+
         return;
     }
 
 
-    if (outdoorWeather.temperature === null) {
+    if (
+        outdoorWeather.temperature ===
+        null
+    ) {
 
-        cropWarning.classList.add("hidden");
+        cropWarning.classList.add(
+            "hidden"
+        );
+
         return;
     }
 
@@ -1598,6 +2040,7 @@ function updateCropWarning() {
             `This may be too cold for ${capitalize(crop)}. ` +
             `Recommended minimum is around ${data.min}°C.`;
 
+
     } else if (temp > data.max) {
 
         title =
@@ -1607,6 +2050,7 @@ function updateCropWarning() {
             `Outdoor temperature is ${temp}°C. ` +
             `This may be too hot for ${capitalize(crop)}. ` +
             `Recommended maximum is around ${data.max}°C.`;
+
 
     } else if (
         temp >= data.idealMin &&
@@ -1620,6 +2064,7 @@ function updateCropWarning() {
             `${temp}°C is within the preferred temperature ` +
             `range for ${capitalize(crop)}.`;
 
+
     } else {
 
         title =
@@ -1631,13 +2076,16 @@ function updateCropWarning() {
     }
 
 
-    cropWarning.classList.remove("hidden");
+    cropWarning.classList.remove(
+        "hidden"
+    );
 
 
     setText(
         "warningTitle",
         title
     );
+
 
     setText(
         "warningMessage",
@@ -1646,26 +2094,40 @@ function updateCropWarning() {
 }
 
 
-// ============================================
-// UTILITY FUNCTIONS
-// ============================================
+// ============================================================
+// CROP HELPERS
+// ============================================================
 
-function randomNumber(min, max) {
+function isSupportedCrop(crop) {
 
-    return Math.floor(
-        Math.random() * (max - min + 1)
-    ) + min;
+    const normalized =
+        normalizeCropName(crop);
+
+
+    return [
+        "tomato",
+        "pepper",
+        "potato"
+    ].includes(
+        normalized
+    );
 }
 
 
-function setText(id, value) {
+function normalizeCropName(crop) {
 
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.textContent = value;
+    if (!crop) {
+        return "";
     }
+
+
+    return crop
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace("pepper,_bell", "pepper")
+        .replace("bell pepper", "pepper")
+        .replace("_", " ");
 }
 
 
@@ -1675,14 +2137,168 @@ function capitalize(text) {
         return "";
     }
 
+
     return text.charAt(0).toUpperCase() +
         text.slice(1);
 }
 
 
-function wait(ms) {
+// ============================================================
+// FORMATTING HELPERS
+// ============================================================
 
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
+function formatConfidence(value) {
+
+    const number =
+        Number(value);
+
+
+    if (!Number.isFinite(number)) {
+        return "0%";
+    }
+
+
+    return `${number.toFixed(1)}%`;
 }
+
+
+function formatQuality(value) {
+
+    if (!value) {
+        return "not provided";
+    }
+
+
+    if (typeof value === "string") {
+        return value;
+    }
+
+
+    if (
+        typeof value === "object"
+    ) {
+
+        return (
+            value.status ||
+            value.label ||
+            value.score ||
+            "checked"
+        );
+    }
+
+
+    return String(value);
+}
+
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+
+function setText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+    }
+}
+
+
+function hideElement(id) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.classList.add(
+            "hidden"
+        );
+    }
+}
+
+
+function showElement(id) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.classList.remove(
+            "hidden"
+        );
+    }
+}
+
+
+// ============================================================
+// NUMBER HELPERS
+// ============================================================
+
+function randomNumber(
+    min,
+    max
+) {
+
+    return Math.floor(
+        Math.random() *
+        (max - min + 1)
+    ) + min;
+}
+
+
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.min(
+        Math.max(
+            value,
+            min
+        ),
+        max
+    );
+}
+
+
+// ============================================================
+// DEBUG HELPERS
+// ============================================================
+
+window.smartGreenhouseAI = {
+
+    getCurrentPrediction() {
+
+        return currentPrediction;
+    },
+
+    getCurrentImage() {
+
+        return currentImageFile;
+    },
+
+    analyze() {
+
+        return analyzePlantImage();
+    },
+
+    resetScanner() {
+
+        clearSelectedImage();
+    },
+
+    api: API_BASE_URL
+};
