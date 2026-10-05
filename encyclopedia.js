@@ -1,1036 +1,878 @@
 // ============================================================
-// SMART GREENHOUSE AI - ON DEMAND ENCYCLOPEDIA
+// SMART GREENHOUSE AI
+// ENCYCLOPEDIA JAVASCRIPT
 // ============================================================
 
-const ENCYCLOPEDIA_DATA = [
+"use strict";
 
-    // =========================
-    // CROPS
-    // =========================
+// ============================================================
+// CROP DATABASE
+// ============================================================
 
-    {
+const cropDatabase = {
+    tomato: {
         name: "Tomato",
-        scientific: "Solanum lycopersicum",
-        category: "crops",
-        icon: "🍅",
+        scientificName: "Solanum lycopersicum",
+        emoji: "🍅",
+        category: "Vegetable / Fruit",
+
         description:
-            "A warm-season fruit crop widely grown under protected cultivation.",
+            "Tomato is a warm-season crop commonly grown in greenhouses and open fields. It requires good sunlight, controlled temperature, regular watering, and nutrient-rich soil.",
 
-        overview:
-            "Tomato is one of the most important greenhouse crops. It requires stable temperature, adequate light, balanced irrigation, good airflow and proper nutrition. Greenhouse cultivation can provide better control over environmental conditions and crop production.",
+        temperature: "18°C – 27°C",
+        humidity: "60% – 70%",
+        soilMoisture: "60% – 80%",
+        sunlight: "6 – 8 hours/day",
+        waterRequirement: "Moderate",
+        growthTime: "60 – 100 days",
 
-        temperature: "20–28°C during the day; 16–20°C at night",
-        humidity: "60–75%",
-        light: "High light; approximately 6–8+ hours of strong light",
-        water: "Regular irrigation with consistent soil moisture. Avoid waterlogging.",
-        soil: "Well-drained, fertile soil rich in organic matter",
-        ph: "5.8–6.8",
+        soil:
+            "Well-drained, fertile soil rich in organic matter. Slightly acidic to neutral soil is preferred.",
 
-        nutrition: [
-            "Nitrogen supports vegetative growth.",
-            "Phosphorus supports root development and flowering.",
-            "Potassium supports fruit development and quality.",
-            "Calcium helps maintain healthy growing tissue and fruit quality.",
-            "Magnesium is important for chlorophyll production."
-        ],
+        watering:
+            "Water regularly while avoiding waterlogging. Keep soil moisture relatively consistent.",
 
-        growth: [
-            "Seed germination",
-            "Seedling development",
-            "Vegetative growth",
-            "Flowering",
-            "Fruit development",
-            "Fruit ripening"
-        ],
+        nutrients:
+            "Tomatoes benefit from nitrogen during early growth and phosphorus and potassium during flowering and fruit development.",
 
-        pests: [
-            "Aphids",
-            "Whiteflies",
-            "Thrips",
-            "Spider mites",
-            "Tomato hornworms"
-        ],
-
-        diseases: [
-            "Early blight",
+        commonProblems: [
             "Late blight",
+            "Early blight",
             "Powdery mildew",
-            "Fusarium wilt",
-            "Bacterial wilt",
-            "Mosaic virus diseases"
-        ],
-
-        symptoms:
-            "Yellowing leaves, curling leaves, weak growth, leaf spots, flower drop or abnormal fruit development may indicate environmental stress, pests or disease.",
-
-        prevention: [
-            "Maintain good airflow.",
-            "Avoid excessive humidity.",
-            "Inspect leaves regularly.",
-            "Remove heavily infected plant material.",
-            "Keep irrigation consistent.",
-            "Maintain balanced nutrition.",
-            "Control greenhouse pests early."
-        ],
-
-        greenhouse:
-            "Tomatoes perform well in controlled greenhouse environments when temperature, humidity, irrigation, nutrition and pollination are carefully managed.",
-
-        ai:
-            "For image recognition, useful visual features include leaf shape, leaf spots, discoloration, fruit appearance, pest presence and overall plant structure."
-    },
-
-    {
-        name: "Wheat",
-        scientific: "Triticum aestivum",
-        category: "crops",
-        icon: "🌾",
-        description:
-            "A major cereal crop cultivated for grain production.",
-
-        overview:
-            "Wheat is primarily a field crop but can be studied in controlled agricultural environments for growth and disease research.",
-
-        temperature: "Approximately 15–25°C depending on growth stage",
-        humidity: "Moderate humidity",
-        light: "Strong natural or artificial light",
-        water: "Moderate and consistent moisture",
-        soil: "Well-drained fertile soil",
-        ph: "6.0–7.5",
-
-        nutrition: [
-            "Nitrogen supports leaf and biomass production.",
-            "Phosphorus supports roots and early development.",
-            "Potassium supports overall plant strength."
-        ],
-
-        growth: [
-            "Germination",
-            "Seedling growth",
-            "Tillering",
-            "Stem elongation",
-            "Flowering",
-            "Grain filling",
-            "Maturity"
-        ],
-
-        pests: [
+            "Bacterial spot",
             "Aphids",
-            "Armyworms",
-            "Hessian fly"
+            "Whiteflies"
         ],
 
-        diseases: [
-            "Rust diseases",
+        tips: [
+            "Provide strong sunlight.",
+            "Avoid excessive watering.",
+            "Provide support for growing plants.",
+            "Maintain good airflow between plants.",
+            "Monitor leaves regularly for pests and diseases."
+        ]
+    },
+
+    pepper: {
+        name: "Pepper",
+        scientificName: "Capsicum annuum",
+        emoji: "🌶️",
+        category: "Vegetable",
+
+        description:
+            "Pepper is a warm-season crop that grows well under controlled greenhouse conditions. Stable temperature, adequate sunlight, and balanced nutrients help produce healthy fruits.",
+
+        temperature: "21°C – 29°C",
+        humidity: "60% – 70%",
+        soilMoisture: "55% – 75%",
+        sunlight: "6 – 8 hours/day",
+        waterRequirement: "Moderate",
+        growthTime: "60 – 90 days",
+
+        soil:
+            "Loose, fertile, well-drained soil with plenty of organic matter is ideal.",
+
+        watering:
+            "Keep the soil evenly moist but avoid excessive water around the roots.",
+
+        nutrients:
+            "Balanced fertilizer is useful during vegetative growth, followed by increased phosphorus and potassium during flowering and fruit production.",
+
+        commonProblems: [
+            "Bacterial spot",
+            "Phytophthora blight",
             "Powdery mildew",
-            "Fusarium head blight"
-        ],
-
-        symptoms:
-            "Yellowing, stunted growth, unusual spots or rust-colored structures may indicate stress, pest damage or disease.",
-
-        prevention: [
-            "Use healthy seed.",
-            "Maintain appropriate irrigation.",
-            "Monitor plants regularly.",
-            "Control weeds and pests.",
-            "Maintain balanced nutrition."
-        ],
-
-        greenhouse:
-            "Controlled environments can be useful for wheat research, disease studies and growth experiments.",
-
-        ai:
-            "AI identification can examine leaf color, disease spots, growth structure and visible pest damage."
-    },
-
-    {
-        name: "Rice",
-        scientific: "Oryza sativa",
-        category: "crops",
-        icon: "🌾",
-        description:
-            "A major cereal crop and staple food crop grown in many regions.",
-
-        overview:
-            "Rice requires adequate water, nutrients, light and suitable temperature. Controlled environments can be used for research and early-stage cultivation studies.",
-
-        temperature: "20–35°C depending on growth stage",
-        humidity: "Moderate to high",
-        light: "High light",
-        water: "High water requirement compared with many dryland crops",
-        soil: "Fertile soil with good nutrient availability",
-        ph: "5.5–7.0",
-
-        nutrition: [
-            "Nitrogen supports vegetative growth.",
-            "Phosphorus supports root development.",
-            "Potassium improves plant strength and stress tolerance."
-        ],
-
-        growth: [
-            "Germination",
-            "Seedling establishment",
-            "Tillering",
-            "Panicle development",
-            "Flowering",
-            "Grain filling",
-            "Maturity"
-        ],
-
-        pests: [
-            "Rice planthoppers",
-            "Stem borers",
-            "Leaf folders"
-        ],
-
-        diseases: [
-            "Rice blast",
-            "Bacterial leaf blight",
-            "Sheath blight"
-        ],
-
-        symptoms:
-            "Leaf spots, discoloration, wilting, damaged stems and poor grain development can indicate pest or disease problems.",
-
-        prevention: [
-            "Monitor plants regularly.",
-            "Maintain balanced fertilizer use.",
-            "Use healthy planting material.",
-            "Manage water appropriately.",
-            "Remove severely affected material."
-        ],
-
-        greenhouse:
-            "Greenhouse conditions can be used for controlled rice research and early plant development studies.",
-
-        ai:
-            "AI can analyze leaf lesions, discoloration, plant structure and visible insect damage."
-    },
-
-    {
-        name: "Cucumber",
-        scientific: "Cucumis sativus",
-        category: "crops",
-        icon: "🥒",
-        description:
-            "A warm-season vegetable commonly grown in protected cultivation.",
-
-        overview:
-            "Cucumber grows rapidly and performs well under warm greenhouse conditions. Consistent irrigation, humidity management, nutrition and airflow are important.",
-
-        temperature: "21–29°C",
-        humidity: "60–80%",
-        light: "High light",
-        water: "Frequent and consistent irrigation",
-        soil: "Fertile, well-drained soil",
-        ph: "5.5–7.0",
-
-        nutrition: [
-            "Nitrogen supports vegetative growth.",
-            "Potassium supports fruit production.",
-            "Calcium supports healthy tissues.",
-            "Magnesium supports photosynthesis."
-        ],
-
-        growth: [
-            "Germination",
-            "Seedling growth",
-            "Vine development",
-            "Flowering",
-            "Fruit development",
-            "Harvest"
-        ],
-
-        pests: [
             "Aphids",
-            "Whiteflies",
-            "Spider mites",
-            "Cucumber beetles",
-            "Thrips"
+            "Thrips",
+            "Spider mites"
         ],
 
-        diseases: [
-            "Powdery mildew",
-            "Downy mildew",
-            "Fusarium wilt",
-            "Mosaic virus diseases"
-        ],
-
-        symptoms:
-            "Yellow leaves, powdery growth, leaf spots, curling leaves and malformed fruit can indicate stress or disease.",
-
-        prevention: [
-            "Provide good ventilation.",
-            "Avoid prolonged leaf wetness.",
-            "Inspect leaves frequently.",
-            "Control pests early.",
-            "Maintain consistent irrigation."
-        ],
-
-        greenhouse:
-            "Cucumber is well suited to greenhouse cultivation because environmental conditions can be controlled closely.",
-
-        ai:
-            "AI can examine leaf texture, spots, discoloration, pest presence and fruit shape."
+        tips: [
+            "Maintain stable greenhouse temperature.",
+            "Avoid waterlogging.",
+            "Provide sufficient sunlight.",
+            "Inspect the underside of leaves for pests.",
+            "Maintain good ventilation."
+        ]
     },
 
-    // =========================
-    // PESTS
-    // =========================
+    potato: {
+        name: "Potato",
+        scientificName: "Solanum tuberosum",
+        emoji: "🥔",
+        category: "Tuber Crop",
 
-    {
-        name: "Aphid",
-        scientific: "Aphidoidea",
-        category: "insects",
-        icon: "🐜",
         description:
-            "A small sap-feeding insect that can weaken greenhouse plants.",
+            "Potato is a cool-season crop grown for its underground tubers. Proper soil moisture, temperature, drainage, and nutrient management are important for good tuber development.",
 
-        overview:
-            "Aphids are soft-bodied insects that feed on plant sap. They can reproduce rapidly under favorable conditions and may transmit plant viruses.",
+        temperature: "15°C – 21°C",
+        humidity: "70% – 80%",
+        soilMoisture: "60% – 75%",
+        sunlight: "6 – 8 hours/day",
+        waterRequirement: "Moderate",
+        growthTime: "70 – 120 days",
 
-        temperature: "Often increases rapidly under warm conditions",
-        humidity: "Moderate conditions can support populations",
-        light: "Not directly dependent on light",
-        water: "Plant water stress can increase vulnerability",
-        soil: "Not soil dependent",
-        ph: "Not directly applicable",
+        soil:
+            "Loose, well-drained soil is preferred because compact or waterlogged soil can affect tuber development.",
 
-        nutrition: [
-            "Aphids feed on plant phloem rather than soil nutrients."
+        watering:
+            "Maintain consistent soil moisture, especially during tuber formation. Avoid excessive irrigation.",
+
+        nutrients:
+            "Potatoes require balanced nutrients, particularly potassium for healthy tuber development.",
+
+        commonProblems: [
+            "Late blight",
+            "Early blight",
+            "Common scab",
+            "Potato beetles",
+            "Aphids",
+            "Wireworms"
         ],
 
-        growth: [
-            "Egg or live birth depending on species",
-            "Nymph",
-            "Adult",
-            "Rapid reproduction under favorable conditions"
-        ],
-
-        pests: [
-            "Aphids themselves are the pest."
-        ],
-
-        diseases: [
-            "Some aphid species can transmit plant viruses."
-        ],
-
-        symptoms:
-            "Leaf curling, distorted new growth, sticky honeydew and reduced plant vigor may indicate aphid activity.",
-
-        prevention: [
-            "Inspect new growth regularly.",
-            "Remove heavily infested leaves.",
-            "Control weeds around the greenhouse.",
-            "Use appropriate biological or integrated pest management methods."
-        ],
-
-        greenhouse:
-            "Aphids can spread quickly in protected cultivation, so early detection is important.",
-
-        ai:
-            "AI can look for small insects clustered on young shoots, leaf curling and characteristic feeding damage."
-    },
-
-    {
-        name: "Greenhouse Whitefly",
-        scientific: "Trialeurodes vaporariorum",
-        category: "insects",
-        icon: "🦋",
-        description:
-            "A small sap-feeding pest commonly found in protected cultivation.",
-
-        overview:
-            "Whiteflies feed on plant sap and can weaken plants. Their populations can increase quickly in greenhouse environments.",
-
-        temperature: "Warm conditions can favor population growth",
-        humidity: "Moderate to high humidity may support populations",
-        light: "Normal greenhouse light",
-        water: "Maintain appropriate plant irrigation",
-        soil: "Not soil dependent",
-        ph: "Not directly applicable",
-
-        nutrition: [
-            "Whiteflies feed directly on plant tissues rather than soil nutrients."
-        ],
-
-        growth: [
-            "Egg",
-            "Nymph",
-            "Pupa-like stage",
-            "Adult"
-        ],
-
-        pests: [
-            "Whitefly"
-        ],
-
-        diseases: [
-            "Some whiteflies can transmit plant viruses."
-        ],
-
-        symptoms:
-            "Yellowing leaves, sticky honeydew, reduced vigor and clouds of small white insects when foliage is disturbed.",
-
-        prevention: [
-            "Inspect the underside of leaves.",
-            "Use insect monitoring traps where appropriate.",
-            "Remove heavily infested plant material.",
-            "Maintain greenhouse hygiene."
-        ],
-
-        greenhouse:
-            "Whiteflies are particularly important greenhouse pests because their population can build rapidly.",
-
-        ai:
-            "AI can identify white insects on leaf undersides, yellowing and characteristic feeding damage."
-    },
-
-    {
-        name: "Two-Spotted Spider Mite",
-        scientific: "Tetranychus urticae",
-        category: "insects",
-        icon: "🕷️",
-        description:
-            "A tiny mite that feeds on plant cells and can cause leaf damage.",
-
-        overview:
-            "Spider mites are extremely small pests that can damage leaves by feeding on plant cells. Severe infestations can reduce photosynthesis and plant vigor.",
-
-        temperature: "Warm and dry conditions can favor populations",
-        humidity: "Low humidity often favors outbreaks",
-        light: "Normal greenhouse light",
-        water: "Avoid plant water stress",
-        soil: "Not soil dependent",
-        ph: "Not directly applicable",
-
-        nutrition: [
-            "Spider mites feed on plant cells rather than soil nutrients."
-        ],
-
-        growth: [
-            "Egg",
-            "Larval stage",
-            "Nymphal stages",
-            "Adult"
-        ],
-
-        pests: [
-            "Two-spotted spider mite"
-        ],
-
-        diseases: [
-            "Not a disease, but feeding damage can seriously weaken plants."
-        ],
-
-        symptoms:
-            "Fine yellow or pale speckling on leaves, leaf bronzing and sometimes fine webbing.",
-
-        prevention: [
-            "Monitor leaves regularly.",
-            "Pay special attention during hot, dry conditions.",
-            "Maintain healthy irrigation.",
-            "Use integrated pest management."
-        ],
-
-        greenhouse:
-            "Spider mites can become a major problem in warm, dry greenhouse conditions.",
-
-        ai:
-            "AI can look for fine stippling, bronzing and webbing on leaves."
-    },
-
-    // =========================
-    // DISEASES
-    // =========================
-
-    {
-        name: "Powdery Mildew",
-        scientific: "Multiple fungal species",
-        category: "diseases",
-        icon: "🍃",
-        description:
-            "A fungal disease characterized by powder-like growth on plant surfaces.",
-
-        overview:
-            "Powdery mildew produces white or gray powder-like fungal growth on leaves and other plant surfaces. It can reduce photosynthesis and plant vigor.",
-
-        temperature: "Moderate temperatures can favor development",
-        humidity: "High local humidity can encourage disease",
-        light: "Good light and airflow can help reduce risk",
-        water: "Avoid excessive moisture on foliage",
-        soil: "Depends on host crop",
-        ph: "Depends on host crop",
-
-        nutrition: [
-            "Maintain balanced crop nutrition.",
-            "Avoid excessive nitrogen that encourages overly soft vegetative growth."
-        ],
-
-        growth: [
-            "Spore landing",
-            "Fungal establishment",
-            "Visible powdery growth",
-            "Spore production",
-            "Spread"
-        ],
-
-        pests: [
-            "Not an insect pest."
-        ],
-
-        diseases: [
-            "Powdery mildew"
-        ],
-
-        symptoms:
-            "White powder-like patches on leaves, stems or other plant surfaces.",
-
-        prevention: [
-            "Improve airflow.",
-            "Avoid excessive humidity.",
-            "Remove severely affected material.",
-            "Monitor plants frequently."
-        ],
-
-        greenhouse:
-            "Greenhouse airflow and humidity management are important for reducing powdery mildew risk.",
-
-        ai:
-            "AI image recognition can examine white powder-like patches and leaf discoloration."
-    },
-
-    // =========================
-    // SOIL
-    // =========================
-
-    {
-        name: "Soil pH",
-        scientific: "Soil chemical property",
-        category: "soil",
-        icon: "🧪",
-        description:
-            "A measurement describing how acidic or alkaline the growing medium is.",
-
-        overview:
-            "Soil pH affects nutrient availability and root-zone conditions. Different crops perform best within different pH ranges.",
-
-        temperature: "Not a temperature variable",
-        humidity: "Not directly applicable",
-        light: "Not directly applicable",
-        water: "Water quality can influence root-zone pH",
-        soil: "Directly measured in soil or growing media",
-        ph: "Scale from acidic to alkaline",
-
-        nutrition: [
-            "Incorrect pH can reduce availability of certain nutrients.",
-            "Maintaining crop-appropriate pH helps roots access nutrients."
-        ],
-
-        growth: [
-            "Root development",
-            "Nutrient uptake",
-            "Vegetative growth",
-            "Flowering and fruiting"
-        ],
-
-        pests: [
-            "Not a pest."
-        ],
-
-        diseases: [
-            "Poor root-zone conditions can increase plant stress."
-        ],
-
-        symptoms:
-            "Nutrient deficiencies or poor growth can sometimes be associated with unsuitable root-zone pH.",
-
-        prevention: [
-            "Test the growing medium.",
-            "Use appropriate amendments when required.",
-            "Monitor pH regularly."
-        ],
-
-        greenhouse:
-            "Regular pH monitoring is especially useful in greenhouse production where fertigation and controlled irrigation are used.",
-
-        ai:
-            "AI cannot reliably determine exact soil pH from an ordinary photograph alone. A sensor or laboratory test is more appropriate."
+        tips: [
+            "Use loose and well-drained soil.",
+            "Avoid excessive irrigation.",
+            "Monitor plants for fungal diseases.",
+            "Maintain suitable soil moisture during tuber formation.",
+            "Rotate crops when possible."
+        ]
     }
-
-];
-
+};
 
 // ============================================================
-// ELEMENTS
+// DOM ELEMENTS
 // ============================================================
 
-const encyclopediaSearch = document.getElementById("encyclopediaSearch");
-const encyclopediaGrid = document.getElementById("encyclopediaGrid");
-const encyclopediaEmpty = document.getElementById("encyclopediaEmpty");
-
+let encyclopediaModal = null;
+let encyclopediaContent = null;
 
 // ============================================================
-// INITIALIZE
+// INITIALIZE ENCYCLOPEDIA
 // ============================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializeEncyclopedia();
+});
 
 function initializeEncyclopedia() {
 
-    if (!encyclopediaSearch) {
-        console.warn("Encyclopedia search input not found.");
-        return;
-    }
+    findExistingElements();
 
-    // Start empty.
-    showSearchMessage();
+    setupEncyclopediaButtons();
 
-    // Search while typing.
-    encyclopediaSearch.addEventListener("input", handleEncyclopediaSearch);
+    setupSearch();
 
-    // Category buttons.
-    document.querySelectorAll(".encyclopedia-filter").forEach(button => {
+    setupCloseButtons();
 
-        button.addEventListener("click", () => {
-
-            document.querySelectorAll(".encyclopedia-filter")
-                .forEach(btn => btn.classList.remove("active"));
-
-            button.classList.add("active");
-
-            const category = button.dataset.category;
-
-            searchEncyclopedia(
-                encyclopediaSearch.value.trim(),
-                category
-            );
-        });
-
-    });
-
+    console.log("Encyclopedia initialized successfully.");
 }
 
-
 // ============================================================
-// SEARCH
-// ============================================================
-
-function handleEncyclopediaSearch() {
-
-    const query = encyclopediaSearch.value
-        .trim()
-        .toLowerCase();
-
-    const activeButton =
-        document.querySelector(".encyclopedia-filter.active");
-
-    const category =
-        activeButton?.dataset.category || "all";
-
-    if (!query) {
-        showSearchMessage();
-        return;
-    }
-
-    searchEncyclopedia(query, category);
-}
-
-
-function searchEncyclopedia(query, category = "all") {
-
-    if (!encyclopediaGrid) return;
-
-    const results = ENCYCLOPEDIA_DATA.filter(item => {
-
-        const matchesCategory =
-            category === "all" ||
-            item.category === category;
-
-        const searchableText = `
-            ${item.name}
-            ${item.scientific}
-            ${item.category}
-            ${item.description}
-        `.toLowerCase();
-
-        return matchesCategory &&
-            searchableText.includes(query.toLowerCase());
-    });
-
-    if (results.length === 0) {
-
-        encyclopediaGrid.innerHTML = "";
-
-        if (encyclopediaEmpty) {
-            encyclopediaEmpty.style.display = "block";
-            encyclopediaEmpty.innerHTML = `
-                <div class="empty-icon">🔍</div>
-                <h3>No information found</h3>
-                <p>
-                    Try searching for Tomato, Aphid, Whitefly,
-                    Powdery Mildew or Soil pH.
-                </p>
-            `;
-        }
-
-        return;
-    }
-
-    if (encyclopediaEmpty) {
-        encyclopediaEmpty.style.display = "none";
-    }
-
-    // Only show matching result.
-    encyclopediaGrid.innerHTML =
-        results.map(createSearchResultCard).join("");
-
-    // Add click events.
-    document.querySelectorAll(".encyclopedia-result-button")
-        .forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                const name = button.dataset.name;
-
-                const item =
-                    ENCYCLOPEDIA_DATA.find(
-                        entry => entry.name === name
-                    );
-
-                if (item) {
-                    openEncyclopediaDetails(item);
-                }
-
-            });
-
-        });
-
-}
-
-
-// ============================================================
-// SEARCH RESULT CARD
+// FIND EXISTING HTML ELEMENTS
 // ============================================================
 
-function createSearchResultCard(item) {
+function findExistingElements() {
 
-    return `
-        <article class="advanced-card search-result-card">
+    encyclopediaModal =
+        document.getElementById("encyclopediaModal") ||
+        document.querySelector(".encyclopedia-modal");
 
-            <div class="advanced-card-icon">
-                ${item.icon}
-            </div>
+    encyclopediaContent =
+        document.getElementById("encyclopediaContent") ||
+        document.querySelector(".encyclopedia-content");
 
-            <span class="advanced-card-category">
-                ${item.category.toUpperCase()}
-            </span>
-
-            <h3>${item.name}</h3>
-
-            <p class="scientific-name">
-                ${item.scientific}
-            </p>
-
-            <p class="advanced-card-description">
-                ${item.description}
-            </p>
-
-            <button
-                class="learn-button encyclopedia-result-button"
-                data-name="${item.name}"
-            >
-                View Full Details →
-            </button>
-
-        </article>
-    `;
-}
-
-
-// ============================================================
-// EMPTY SEARCH STATE
-// ============================================================
-
-function showSearchMessage() {
-
-    if (encyclopediaGrid) {
-        encyclopediaGrid.innerHTML = "";
-    }
-
-    if (encyclopediaEmpty) {
-
-        encyclopediaEmpty.style.display = "block";
-
-        encyclopediaEmpty.innerHTML = `
-            <div class="empty-icon">🌱</div>
-
-            <h3>Search the Greenhouse Encyclopedia</h3>
-
-            <p>
-                Search for a crop, pest, disease or soil topic
-                to view its complete information.
-            </p>
-
-            <div class="search-examples">
-                <span>Try:</span>
-                <button onclick="searchExample('Tomato')">
-                    Tomato
-                </button>
-
-                <button onclick="searchExample('Aphid')">
-                    Aphid
-                </button>
-
-                <button onclick="searchExample('Whitefly')">
-                    Whitefly
-                </button>
-
-                <button onclick="searchExample('Powdery Mildew')">
-                    Powdery Mildew
-                </button>
-            </div>
-        `;
+    // If modal doesn't exist, create one automatically.
+    if (!encyclopediaModal) {
+        createEncyclopediaModal();
     }
 }
 
-
-function searchExample(name) {
-
-    if (!encyclopediaSearch) return;
-
-    encyclopediaSearch.value = name;
-
-    handleEncyclopediaSearch();
-}
-
-
 // ============================================================
-// FULL DETAILS MODAL
+// CREATE MODAL IF NOT PRESENT
 // ============================================================
 
-function openEncyclopediaDetails(item) {
-
-    closeEncyclopediaDetails();
+function createEncyclopediaModal() {
 
     const modal = document.createElement("div");
 
     modal.id = "encyclopediaModal";
 
-    modal.className = "encyclopedia-modal";
-
     modal.innerHTML = `
-        <div class="encyclopedia-backdrop"
-             onclick="closeEncyclopediaDetails()">
-        </div>
+        <div class="encyclopedia-overlay"></div>
 
-        <div class="encyclopedia-modal-card">
+        <div class="encyclopedia-window">
 
             <button
                 class="encyclopedia-close"
-                onclick="closeEncyclopediaDetails()">
+                id="encyclopediaClose"
+                aria-label="Close encyclopedia"
+            >
                 ×
             </button>
 
-            <div class="modal-icon">
-                ${item.icon}
-            </div>
-
-            <span class="modal-category">
-                ${item.category.toUpperCase()}
-            </span>
-
-            <h2>${item.name}</h2>
-
-            <p class="modal-scientific">
-                ${item.scientific}
-            </p>
-
-            <p class="modal-overview">
-                ${item.overview}
-            </p>
-
-            ${conditionsSection(item)}
-
-            ${detailSection(
-                "🌱 Nutrition",
-                createList(item.nutrition)
-            )}
-
-            ${detailSection(
-                "🌿 Growth Stages",
-                createList(item.growth)
-            )}
-
-            ${detailSection(
-                "🐛 Common Pests",
-                createList(item.pests)
-            )}
-
-            ${detailSection(
-                "🦠 Diseases",
-                createList(item.diseases)
-            )}
-
-            ${detailSection(
-                "⚠️ Symptoms",
-                `<p>${item.symptoms}</p>`
-            )}
-
-            ${detailSection(
-                "🛡️ Prevention",
-                createList(item.prevention)
-            )}
-
-            ${detailSection(
-                "🏠 Greenhouse Guidance",
-                `<p>${item.greenhouse}</p>`
-            )}
-
-            ${detailSection(
-                "🤖 AI Identification",
-                `<p>${item.ai}</p>`
-            )}
+            <div id="encyclopediaContent"></div>
 
         </div>
     `;
 
     document.body.appendChild(modal);
 
+    encyclopediaModal = modal;
+
+    encyclopediaContent =
+        document.getElementById("encyclopediaContent");
+
+    addGeneratedModalStyles();
+}
+
+// ============================================================
+// GENERATED MODAL STYLES
+// ============================================================
+
+function addGeneratedModalStyles() {
+
+    if (document.getElementById("generatedEncyclopediaStyles")) {
+        return;
+    }
+
+    const style = document.createElement("style");
+
+    style.id = "generatedEncyclopediaStyles";
+
+    style.textContent = `
+        #encyclopediaModal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #encyclopediaModal.active {
+            display: flex;
+        }
+
+        .encyclopedia-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.82);
+            backdrop-filter: blur(10px);
+        }
+
+        .encyclopedia-window {
+            position: relative;
+            width: min(900px, 95vw);
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            border-radius: 24px;
+            background: #0b1220;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+
+        .encyclopedia-close {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .encyclopedia-close:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .encyclopedia-header {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .crop-emoji {
+            font-size: 55px;
+        }
+
+        .encyclopedia-header h2 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .scientific-name {
+            margin-top: 5px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .crop-description {
+            color: #cbd5e1;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .crop-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .crop-stat {
+            padding: 16px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .crop-stat-label {
+            display: block;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .crop-stat-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .encyclopedia-section {
+            margin-top: 22px;
+        }
+
+        .encyclopedia-section h3 {
+            margin-bottom: 10px;
+        }
+
+        .encyclopedia-section p {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+        .encyclopedia-list {
+            padding-left: 20px;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .encyclopedia-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 16px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            outline: none;
+        }
+
+        .encyclopedia-search::placeholder {
+            color: #94a3b8;
+        }
+
+        .crop-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .crop-card {
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .crop-card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .crop-card h3 {
+            margin: 0 0 6px;
+        }
+
+        .crop-card p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+
+            .crop-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .crop-card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .encyclopedia-window {
+                padding: 22px;
+            }
+
+            .encyclopedia-header h2 {
+                font-size: 26px;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+}
+
+// ============================================================
+// ENCYCLOPEDIA BUTTONS
+// ============================================================
+
+function setupEncyclopediaButtons() {
+
+    const buttons = document.querySelectorAll(
+        "[data-encyclopedia], " +
+        ".encyclopedia-btn, " +
+        "#encyclopediaBtn, " +
+        "#openEncyclopedia"
+    );
+
+    buttons.forEach(button => {
+
+        button.addEventListener("click", event => {
+
+            event.preventDefault();
+
+            const crop =
+                button.dataset.encyclopedia ||
+                button.dataset.crop ||
+                "";
+
+            if (crop) {
+                showCrop(crop);
+            } else {
+                openEncyclopedia();
+            }
+        });
+    });
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+function setupSearch() {
+
+    const searchInput = document.getElementById("encyclopediaSearch");
+
+    if (!searchInput) {
+        return;
+    }
+
+    searchInput.addEventListener("input", () => {
+
+        const query =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+        const cards =
+            document.querySelectorAll(".crop-card");
+
+        cards.forEach(card => {
+
+            const text =
+                card.textContent.toLowerCase();
+
+            card.style.display =
+                text.includes(query)
+                    ? ""
+                    : "none";
+        });
+    });
+}
+
+// ============================================================
+// OPEN ENCYCLOPEDIA
+// ============================================================
+
+function openEncyclopedia() {
+
+    if (!encyclopediaModal) {
+        createEncyclopediaModal();
+    }
+
+    renderCropList();
+
+    encyclopediaModal.classList.add("active");
+
     document.body.style.overflow = "hidden";
 }
 
+// ============================================================
+// CLOSE ENCYCLOPEDIA
+// ============================================================
 
-function closeEncyclopediaDetails() {
+function closeEncyclopedia() {
 
-    const modal =
-        document.getElementById("encyclopediaModal");
-
-    if (modal) {
-        modal.remove();
+    if (!encyclopediaModal) {
+        return;
     }
+
+    encyclopediaModal.classList.remove("active");
 
     document.body.style.overflow = "";
 }
 
+// ============================================================
+// CLOSE BUTTONS
+// ============================================================
+
+function setupCloseButtons() {
+
+    document.addEventListener("click", event => {
+
+        if (
+            event.target.id === "encyclopediaClose" ||
+            event.target.classList.contains("encyclopedia-overlay")
+        ) {
+            closeEncyclopedia();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+
+        if (event.key === "Escape") {
+            closeEncyclopedia();
+        }
+    });
+}
 
 // ============================================================
-// CONDITIONS
+// RENDER CROP LIST
 // ============================================================
 
-function conditionsSection(item) {
+function renderCropList() {
 
-    return `
-        <section class="encyclopedia-detail-section">
+    if (!encyclopediaContent) {
+        return;
+    }
 
-            <h3>🌡️ Ideal Conditions</h3>
+    encyclopediaContent.innerHTML = `
 
-            <div class="condition-grid">
+        <div class="encyclopedia-header">
+            <div class="crop-emoji">🌱</div>
 
-                <div class="condition-box">
-                    <span>Temperature</span>
-                    <strong>${item.temperature}</strong>
-                </div>
+            <div>
+                <h2>Plant Encyclopedia</h2>
+                <p class="scientific-name">
+                    Smart Greenhouse AI Knowledge Base
+                </p>
+            </div>
+        </div>
 
-                <div class="condition-box">
-                    <span>Humidity</span>
-                    <strong>${item.humidity}</strong>
-                </div>
+        <input
+            type="text"
+            id="encyclopediaSearch"
+            class="encyclopedia-search"
+            placeholder="Search for a crop..."
+        >
 
-                <div class="condition-box">
-                    <span>Light</span>
-                    <strong>${item.light}</strong>
-                </div>
+        <div class="crop-card-grid">
 
-                <div class="condition-box">
-                    <span>Water</span>
-                    <strong>${item.water}</strong>
-                </div>
+            ${Object.entries(cropDatabase)
+                .map(([key, crop]) => `
 
-                <div class="condition-box">
-                    <span>Soil</span>
-                    <strong>${item.soil}</strong>
-                </div>
+                    <div
+                        class="crop-card"
+                        data-crop="${key}"
+                        onclick="showCrop('${key}')"
+                    >
 
-                <div class="condition-box">
-                    <span>pH</span>
-                    <strong>${item.ph}</strong>
-                </div>
+                        <div class="crop-card-icon">
+                            ${crop.emoji}
+                        </div>
+
+                        <h3>${crop.name}</h3>
+
+                        <p>
+                            ${crop.scientificName}
+                        </p>
+
+                    </div>
+
+                `)
+                .join("")}
+
+        </div>
+    `;
+
+    setupSearch();
+}
+
+// ============================================================
+// SHOW SPECIFIC CROP
+// ============================================================
+
+function showCrop(cropName) {
+
+    const key =
+        String(cropName)
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "_");
+
+    const crop =
+        cropDatabase[key] ||
+        cropDatabase[
+            Object.keys(cropDatabase).find(
+                item =>
+                    item.toLowerCase() ===
+                    key.toLowerCase()
+            )
+        ];
+
+    if (!crop) {
+
+        console.warn(
+            "Crop not found in encyclopedia:",
+            cropName
+        );
+
+        return;
+    }
+
+    if (!encyclopediaModal) {
+        createEncyclopediaModal();
+    }
+
+    encyclopediaContent.innerHTML = `
+
+        <button
+            class="encyclopedia-back"
+            onclick="openEncyclopedia()"
+            style="
+                border:none;
+                background:rgba(255,255,255,0.07);
+                color:#fff;
+                padding:9px 14px;
+                border-radius:10px;
+                cursor:pointer;
+                margin-bottom:20px;
+            "
+        >
+            ← Back to Crops
+        </button>
+
+        <div class="encyclopedia-header">
+
+            <div class="crop-emoji">
+                ${crop.emoji}
+            </div>
+
+            <div>
+
+                <h2>
+                    ${crop.name}
+                </h2>
+
+                <p class="scientific-name">
+                    ${crop.scientificName}
+                </p>
 
             </div>
 
-        </section>
+        </div>
+
+        <p class="crop-description">
+            ${crop.description}
+        </p>
+
+        <div class="crop-stats">
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    🌡️ Temperature
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.temperature}
+                </span>
+            </div>
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    💧 Humidity
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.humidity}
+                </span>
+            </div>
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    🌱 Soil Moisture
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.soilMoisture}
+                </span>
+            </div>
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    ☀️ Sunlight
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.sunlight}
+                </span>
+            </div>
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    💧 Water
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.waterRequirement}
+                </span>
+            </div>
+
+            <div class="crop-stat">
+                <span class="crop-stat-label">
+                    ⏱️ Growth Time
+                </span>
+
+                <span class="crop-stat-value">
+                    ${crop.growthTime}
+                </span>
+            </div>
+
+        </div>
+
+        <div class="encyclopedia-section">
+
+            <h3>🌱 Soil Requirements</h3>
+
+            <p>
+                ${crop.soil}
+            </p>
+
+        </div>
+
+        <div class="encyclopedia-section">
+
+            <h3>💧 Watering</h3>
+
+            <p>
+                ${crop.watering}
+            </p>
+
+        </div>
+
+        <div class="encyclopedia-section">
+
+            <h3>🧪 Nutrient Requirements</h3>
+
+            <p>
+                ${crop.nutrients}
+            </p>
+
+        </div>
+
+        <div class="encyclopedia-section">
+
+            <h3>⚠️ Common Problems</h3>
+
+            <ul class="encyclopedia-list">
+
+                ${crop.commonProblems
+                    .map(problem => `<li>${problem}</li>`)
+                    .join("")}
+
+            </ul>
+
+        </div>
+
+        <div class="encyclopedia-section">
+
+            <h3>💡 Growing Tips</h3>
+
+            <ul class="encyclopedia-list">
+
+                ${crop.tips
+                    .map(tip => `<li>${tip}</li>`)
+                    .join("")}
+
+            </ul>
+
+        </div>
     `;
+
+    encyclopediaModal.classList.add("active");
+
+    document.body.style.overflow = "hidden";
 }
 
-
 // ============================================================
-// DETAIL SECTION
-// ============================================================
-
-function detailSection(title, content) {
-
-    return `
-        <section class="encyclopedia-detail-section">
-
-            <h3>${title}</h3>
-
-            ${content}
-
-        </section>
-    `;
-}
-
-
-// ============================================================
-// LIST CREATOR
+// AI RESULT → ENCYCLOPEDIA CONNECTION
 // ============================================================
 
-function createList(items) {
+function showCropFromAI(cropName) {
 
-    if (!Array.isArray(items)) {
-        return items;
+    if (!cropName) {
+        return;
     }
 
-    return `
-        <ul class="detail-list">
-
-            ${items.map(item => `
-                <li>${item}</li>
-            `).join("")}
-
-        </ul>
-    `;
+    showCrop(cropName);
 }
 
-
 // ============================================================
-// ESCAPE HTML
+// GET CROP DATA
 // ============================================================
 
-function escapeHTML(value) {
+function getCropData(cropName) {
 
-    return String(value ?? "")
-        .replace(/[&<>"']/g, character => {
+    const key =
+        String(cropName)
+            .toLowerCase()
+            .trim();
 
-            const entities = {
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            };
-
-            return entities[character];
-
-        });
+    return cropDatabase[key] || null;
 }
 
+// ============================================================
+// GLOBAL FUNCTIONS
+// ============================================================
+
+window.openEncyclopedia = openEncyclopedia;
+window.closeEncyclopedia = closeEncyclopedia;
+window.showCrop = showCrop;
+window.showCropFromAI = showCropFromAI;
+window.getCropData = getCropData;
 
 // ============================================================
-// START
+// END
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeEncyclopedia
+console.log(
+    "🌱 Smart Greenhouse AI Encyclopedia loaded."
 );
