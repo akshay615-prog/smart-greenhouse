@@ -1,302 +1,743 @@
-/* =====================================================
-   ADVANCED ENCYCLOPEDIA
-   ===================================================== */
+/* =========================================================
+   SMART GREENHOUSE AI
+   PLANT ENCYCLOPEDIA STYLES
+   ========================================================= */
 
-.advanced-card {
-    min-height: 290px;
+:root {
+    --eco-green: #39e58c;
+    --eco-green-dark: #16a866;
+    --eco-cyan: #35d9ff;
+
+    --bg-main: #07110d;
+    --bg-card: #0d1b15;
+    --bg-card-2: #10241a;
+
+    --text-main: #f2fff8;
+    --text-soft: #a8bdb2;
+    --text-muted: #71857b;
+
+    --border: rgba(57, 229, 140, 0.16);
+    --border-bright: rgba(57, 229, 140, 0.38);
+
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+   ENCYCLOPEDIA CONTAINER
+   ========================================================= */
+
+.encyclopedia-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    color: var(--text-main);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.encyclopedia-header {
     display: flex;
-    gap: 18px;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.advanced-card-content {
+.encyclopedia-title {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        var(--eco-green)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.encyclopedia-subtitle {
+    margin: 8px 0 0;
+    color: var(--text-soft);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.encyclopedia-search {
+    position: relative;
+    width: 100%;
+    margin-bottom: 28px;
+}
+
+.encyclopedia-search input {
+    width: 100%;
+    height: 54px;
+    padding: 0 20px 0 50px;
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    background: rgba(13, 27, 21, 0.88);
+    color: var(--text-main);
+
+    outline: none;
+    font-size: 15px;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.encyclopedia-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.encyclopedia-search input:focus {
+    border-color: var(--border-bright);
+    background: var(--bg-card-2);
+
+    box-shadow:
+        0 0 0 4px rgba(57, 229, 140, 0.08),
+        0 10px 35px rgba(0, 0, 0, 0.25);
+}
+
+.encyclopedia-search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    color: var(--eco-green);
+    font-size: 19px;
+    pointer-events: none;
+}
+
+/* =========================================================
+   CATEGORY FILTERS
+   ========================================================= */
+
+.encyclopedia-filters {
     display: flex;
-    flex-direction: column;
-    height: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
 }
 
-.advanced-card-content .learn-button {
-    margin-top: auto;
-}
+.encyclopedia-filter {
+    padding: 10px 17px;
 
+    border: 1px solid var(--border);
+    border-radius: 999px;
 
-/* =====================================================
-   SCIENTIFIC NAME
-   ===================================================== */
+    background: rgba(13, 27, 21, 0.75);
+    color: var(--text-soft);
 
-.scientific-name {
-    color: #6f9a80 !important;
-    font-style: italic;
-    font-size: 13px !important;
-    margin-top: -2px !important;
-    margin-bottom: 10px !important;
-}
-
-
-/* =====================================================
-   LEARN BUTTON
-   ===================================================== */
-
-.learn-button {
-    border: 1px solid rgba(89, 255, 154, 0.25);
-    background: rgba(89, 255, 154, 0.07);
-    color: #59ff9a;
-    padding: 11px 14px;
-    border-radius: 10px;
     cursor: pointer;
-    font-weight: 700;
-    margin-top: 18px;
-    transition: 0.2s;
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
 }
 
-.learn-button:hover {
-    background: #59ff9a;
-    color: #07130f;
+.encyclopedia-filter:hover {
     transform: translateY(-2px);
+    border-color: var(--border-bright);
+    color: var(--text-main);
 }
 
+.encyclopedia-filter.active {
+    background: linear-gradient(
+        135deg,
+        var(--eco-green-dark),
+        var(--eco-green)
+    );
 
-/* =====================================================
-   EMPTY SEARCH
-   ===================================================== */
+    border-color: transparent;
+    color: #03100a;
 
-.encyclopedia-empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    border: 1px dashed rgba(89, 255, 154, 0.2);
-    border-radius: 18px;
-    color: #91ad9d;
+    box-shadow: 0 8px 24px rgba(57, 229, 140, 0.18);
 }
 
+/* =========================================================
+   PLANT GRID
+   ========================================================= */
 
-/* =====================================================
-   MODAL
-   ===================================================== */
+.plant-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+/* =========================================================
+   PLANT CARD
+   ========================================================= */
+
+.plant-card {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 300px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(16, 36, 26, 0.96),
+            rgba(8, 18, 13, 0.98)
+        );
+
+    border: 1px solid var(--border);
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.plant-card::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+
+    top: -90px;
+    right: -70px;
+
+    background: var(--eco-green);
+    opacity: 0.06;
+
+    border-radius: 50%;
+    filter: blur(30px);
+
+    pointer-events: none;
+}
+
+.plant-card:hover {
+    transform: translateY(-7px);
+
+    border-color: var(--border-bright);
+
+    box-shadow:
+        0 25px 65px rgba(0, 0, 0, 0.45),
+        0 0 30px rgba(57, 229, 140, 0.07);
+}
+
+/* =========================================================
+   PLANT IMAGE
+   ========================================================= */
+
+.plant-card-image {
+    position: relative;
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #102c1d,
+            #07130d
+        );
+}
+
+.plant-card-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.45s ease,
+        filter 0.45s ease;
+}
+
+.plant-card:hover .plant-card-image img {
+    transform: scale(1.06);
+    filter: saturate(1.08);
+}
+
+/* Image overlay */
+
+.plant-card-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(7, 17, 13, 0.9),
+            transparent 55%
+        );
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   PLANT CARD CONTENT
+   ========================================================= */
+
+.plant-card-content {
+    padding: 20px;
+}
+
+.plant-card-title {
+    margin: 0 0 7px;
+
+    color: var(--text-main);
+
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.plant-card-description {
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 13px;
+    line-height: 1.65;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* =========================================================
+   PLANT TAGS
+   ========================================================= */
+
+.plant-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 15px;
+}
+
+.plant-tag {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: rgba(57, 229, 140, 0.08);
+    border: 1px solid rgba(57, 229, 140, 0.14);
+
+    color: #8ff3bd;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+/* =========================================================
+   DETAIL PANEL / MODAL
+   ========================================================= */
 
 .encyclopedia-modal {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(2, 8, 5, 0.78);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-.encyclopedia-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.78);
-    backdrop-filter: blur(8px);
+.encyclopedia-modal.hidden {
+    display: none;
 }
 
-.encyclopedia-modal-card {
+.encyclopedia-modal-content {
     position: relative;
-    width: min(900px, 92vw);
-    max-height: 88vh;
+
+    width: min(900px, 100%);
+    max-height: 90vh;
+
     overflow-y: auto;
-    margin: 6vh auto 0;
+
     padding: 30px;
-    border-radius: 24px;
-    background: #0a1d13;
-    border: 1px solid rgba(89, 255, 154, 0.22);
-    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+
+    background:
+        linear-gradient(
+            145deg,
+            #10251a,
+            #08130e
+        );
+
+    border: 1px solid var(--border-bright);
+    border-radius: 26px;
+
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.6),
+        0 0 50px rgba(57, 229, 140, 0.08);
+
+    animation: encyclopediaModalIn 0.25s ease;
 }
 
+@keyframes encyclopediaModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
 
-/* =====================================================
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =========================================================
    CLOSE BUTTON
-   ===================================================== */
+   ========================================================= */
 
 .encyclopedia-close {
     position: absolute;
-    top: 15px;
+    top: 18px;
     right: 18px;
 
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
 
-    border: 0;
-    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    background: rgba(255, 255, 255, 0.07);
-    color: #d9f8e5;
+    border: 1px solid var(--border);
+    border-radius: 12px;
 
-    font-size: 25px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-soft);
+
     cursor: pointer;
 
-    transition: 0.2s;
+    font-size: 20px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .encyclopedia-close:hover {
-    background: rgba(255, 90, 90, 0.2);
-    color: #ffaaaa;
+    background: rgba(255, 70, 100, 0.12);
+    color: #ff879d;
+
+    transform: rotate(5deg);
 }
 
+/* =========================================================
+   DETAIL CONTENT
+   ========================================================= */
 
-/* =====================================================
-   MODAL TITLE
-   ===================================================== */
-
-.modal-title {
-    display: flex;
-    gap: 18px;
-    align-items: center;
-
-    padding-right: 45px;
-    margin-bottom: 25px;
-}
-
-.modal-icon {
-    width: 70px;
-    height: 70px;
-
+.plant-detail {
     display: grid;
-    place-items: center;
-
-    border-radius: 18px;
-
-    background: rgba(89, 255, 154, 0.08);
-
-    font-size: 38px;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    align-items: start;
 }
 
-.modal-title h2 {
-    font-size: 32px;
-    margin: 5px 0;
-}
+.plant-detail-image {
+    width: 100%;
+    height: 280px;
 
-
-/* =====================================================
-   MODAL BODY
-   ===================================================== */
-
-.modal-body {
-    display: grid;
-    gap: 16px;
-}
-
-
-/* =====================================================
-   DETAIL SECTIONS
-   ===================================================== */
-
-.encyclopedia-detail-section {
-    padding: 20px;
-
-    border-radius: 16px;
-
-    background: rgba(255, 255, 255, 0.025);
-
-    border: 1px solid rgba(89, 255, 154, 0.08);
-}
-
-.encyclopedia-detail-section h3 {
-    color: #59ff9a;
-    margin-bottom: 10px;
-}
-
-.encyclopedia-detail-section p {
-    color: #a9c3b3;
-    line-height: 1.7;
-}
-
-
-/* =====================================================
-   CONDITION GRID
-   ===================================================== */
-
-.condition-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 10px;
-}
-
-.condition-box {
-    display: flex;
-    gap: 12px;
-
-    padding: 14px;
-
-    border-radius: 12px;
-
-    background: rgba(5, 20, 12, 0.7);
-}
-
-.condition-box > span {
-    font-size: 22px;
-}
-
-.condition-box small {
-    display: block;
-
-    color: #718d7c;
-
-    margin-bottom: 4px;
-}
-
-.condition-box strong {
-    color: #e9fff1;
-
-    font-size: 14px;
-
-    line-height: 1.4;
-}
-
-
-/* =====================================================
-   TAGS
-   ===================================================== */
-
-.detail-tags {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-}
-
-.detail-tags span {
-    padding: 8px 11px;
+    overflow: hidden;
 
     border-radius: 20px;
 
-    background: rgba(89, 255, 154, 0.08);
+    border: 1px solid var(--border);
 
-    border: 1px solid rgba(89, 255, 154, 0.12);
-
-    color: #bcebcf;
-
-    font-size: 13px;
+    background: #09150f;
 }
 
+.plant-detail-image img {
+    width: 100%;
+    height: 100%;
 
-/* =====================================================
-   MOBILE
-   ===================================================== */
+    object-fit: cover;
+}
 
-@media (max-width: 650px) {
+.plant-detail-content h2 {
+    margin: 0 0 8px;
 
-    .encyclopedia-modal-card {
-        padding: 20px;
+    color: var(--text-main);
 
-        margin-top: 3vh;
+    font-size: clamp(26px, 4vw, 38px);
+    font-weight: 800;
+}
 
-        max-height: 94vh;
+.plant-scientific-name {
+    margin-bottom: 20px;
+
+    color: var(--eco-green);
+
+    font-size: 14px;
+    font-style: italic;
+}
+
+.plant-detail-section {
+    margin-top: 24px;
+}
+
+.plant-detail-section h3 {
+    margin: 0 0 9px;
+
+    color: var(--text-main);
+
+    font-size: 16px;
+}
+
+.plant-detail-section p {
+    margin: 0;
+
+    color: var(--text-soft);
+
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+/* =========================================================
+   INFO GRID
+   ========================================================= */
+
+.plant-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+.plant-info-item {
+    padding: 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.plant-info-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.plant-info-value {
+    color: var(--text-main);
+
+    font-size: 14px;
+    font-weight: 650;
+}
+
+/* =========================================================
+   NO RESULTS
+   ========================================================= */
+
+.encyclopedia-empty {
+    grid-column: 1 / -1;
+
+    padding: 70px 20px;
+
+    text-align: center;
+
+    border: 1px dashed var(--border-bright);
+    border-radius: 20px;
+
+    background: rgba(57, 229, 140, 0.025);
+}
+
+.encyclopedia-empty-icon {
+    margin-bottom: 12px;
+
+    font-size: 42px;
+    opacity: 0.7;
+}
+
+.encyclopedia-empty h3 {
+    margin: 0 0 8px;
+
+    color: var(--text-main);
+}
+
+.encyclopedia-empty p {
+    margin: 0;
+
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.encyclopedia-modal-content::-webkit-scrollbar {
+    width: 7px;
+}
+
+.encyclopedia-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.encyclopedia-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(57, 229, 140, 0.22);
+    border-radius: 20px;
+}
+
+.encyclopedia-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(57, 229, 140, 0.4);
+}
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .encyclopedia-container {
+        padding: 24px;
     }
 
-    .condition-grid {
+    .plant-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .plant-detail {
+        grid-template-columns: 220px 1fr;
+    }
+
+    .plant-detail-image {
+        height: 220px;
+    }
+}
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 620px) {
+
+    .encyclopedia-container {
+        padding: 18px;
+    }
+
+    .encyclopedia-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .encyclopedia-title {
+        font-size: 30px;
+    }
+
+    .encyclopedia-subtitle {
+        font-size: 13px;
+    }
+
+    .encyclopedia-filters {
+        gap: 7px;
+    }
+
+    .encyclopedia-filter {
+        padding: 8px 13px;
+        font-size: 12px;
+    }
+
+    .plant-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .plant-card {
+        min-height: auto;
+    }
+
+    .plant-card-image {
+        height: 210px;
+    }
+
+    .encyclopedia-modal {
+        padding: 12px;
+    }
+
+    .encyclopedia-modal-content {
+        padding: 22px;
+        border-radius: 20px;
+    }
+
+    .plant-detail {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .plant-detail-image {
+        height: 230px;
+    }
+
+    .plant-info-grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .modal-title h2 {
-        font-size: 25px;
-    }
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
 
-    .modal-icon {
-        width: 55px;
-        height: 55px;
+.encyclopedia-filter:focus-visible,
+.encyclopedia-close:focus-visible,
+.plant-card:focus-visible,
+.encyclopedia-search input:focus-visible {
+    outline: 2px solid var(--eco-green);
+    outline-offset: 3px;
+}
 
-        font-size: 30px;
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .plant-card,
+    .plant-card-image img,
+    .encyclopedia-filter,
+    .encyclopedia-close,
+    .encyclopedia-modal-content {
+        transition: none;
+        animation: none;
     }
 }
