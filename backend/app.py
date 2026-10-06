@@ -1,229 +1,331 @@
-import os
-
-import numpy as np
-import tensorflow as tf
-
-from PIL import Image
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+from PIL import Image
+from io import BytesIO
+
+import os
+import requests
 
 
-# ==========================================
-# PATHS
-# ==========================================
+# ============================================================
+# LOAD ENVIRONMENT
+# ============================================================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_DIR, "..", ".env")
 
-MODEL_PATH = os.path.join(
-    BASE_DIR,
-    "model",
-    "crop_model.keras"
-)
+load_dotenv(ENV_PATH)
 
-LABELS_PATH = os.path.join(
-    BASE_DIR,
-    "labels.txt"
-)
+PLANTNET_API_KEY = os.getenv("PLANTNET_API_KEY")
 
 
-# ==========================================
-# SETTINGS
-# ==========================================
-
-IMG_SIZE = 224
-
-
-# ==========================================
-# LOAD MODEL
-# ==========================================
-
-print("======================================")
-print("       SMART GREENHOUSE AI API")
-print("======================================")
-
-print("\nLoading AI model...")
-
-model = tf.keras.models.load_model(MODEL_PATH)
-
-print("AI model loaded successfully!")
-
-
-# ==========================================
-# LOAD LABELS
-# ==========================================
-
-with open(LABELS_PATH, "r", encoding="utf-8") as file:
-    labels = [
-        line.strip()
-        for line in file
-        if line.strip()
-    ]
-
-print("Labels:", labels)
-
-
-# ==========================================
+# ============================================================
 # FASTAPI APP
-# ==========================================
+# ============================================================
 
 app = FastAPI(
     title="Smart Greenhouse AI",
-    description="AI crop identification API",
-    version="1.0"
+    version="3.0"
 )
 
 
-# ==========================================
+# ============================================================
 # CORS
-# ==========================================
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",
-        "http://localhost:5500"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ==========================================
-# HEALTH CHECK
-# ==========================================
+# ============================================================
+# PLANTNET
+# ============================================================
+
+PLANTNET_PROJECT = "all"
+
+PLANTNET_URL = (
+    f"https://my-api.plantnet.org/v2/identify/"
+    f"{PLANTNET_PROJECT}"
+)
+
+
+# ============================================================
+# STARTUP
+# ============================================================
+
+@app.on_event("startup")
+def startup():
+
+    if PLANTNET_API_KEY:
+        print("========================================")
+        print("Pl@ntNet API key loaded successfully!")
+        print("========================================")
+    else:
+        print("WARNING: PLANTNET_API_KEY NOT FOUND!")
+
+    print()
+    print("SMART GREENHOUSE AI READY")
+    print()
+    print("GET  /")
+    print("GET  /health")
+    print("POST /predict")
+    print()
+
+
+# ============================================================
+# HOME
+# ============================================================
 
 @app.get("/")
 def home():
+
     return {
         "status": "online",
         "message": "Smart Greenhouse AI API is running!",
-        "supported_crops": labels
+        "version": "3.0",
+        "ai_engine": "Pl@ntNet",
+        "project": PLANTNET_PROJECT
     }
 
 
-# ==========================================
-# IMAGE PREPROCESSING
-# ==========================================
+# ============================================================
+# HEALTH CHECK
+# ============================================================
 
-def prepare_image(image: Image.Image):
+@app.get("/health")
+def health():
 
-    image = image.convert("RGB")
-
-    image = image.resize(
-        (IMG_SIZE, IMG_SIZE)
-    )
-
-    image = np.array(
-        image,
-        dtype=np.float32
-    )
-
-    # Same preprocessing used during training
-    image = tf.keras.applications.mobilenet_v2.preprocess_input(
-        image
-    )
-
-    image = np.expand_dims(
-        image,
-        axis=0
-    )
-
-    return image
+    return {
+        "status": "healthy",
+        "plantnet_configured": bool(PLANTNET_API_KEY)
+    }
 
 
-# ==========================================
-# PREDICTION
-# ==========================================
+# ============================================================
+# PLANT IDENTIFICATION
+# ============================================================
 
 @app.post("/predict")
 async def predict(
     file: UploadFile = File(...)
 ):
 
+    # --------------------------------------------------------
+    # API KEY
+    # --------------------------------------------------------
+
+    if not PLANTNET_API_KEY:
+
+        raise HTTPException(
+            status_code=500,
+            detail="Pl@ntNet API key is not configured."
+        )
+
+
+    # --------------------------------------------------------
+    # READ IMAGE
+    # --------------------------------------------------------
+
     try:
 
-        print("\n======================================")
-        print("NEW IMAGE RECEIVED")
-        print("Filename:", file.filename)
-        print("======================================")
+        image_data = await file.read()
 
-        # Read uploaded image
-        image_bytes = await file.read()
+        if len(image_data) == 0:
 
-        # Convert bytes to PIL image
-        from io import BytesIO
+            raise HTTPException(
+                status_code=400,
+                detail="The uploaded image is empty."
+            )
+
+
+        # Maximum upload size
+        if len(image_data) > 20 * 1024 * 1024:
+
+            raise HTTPException(
+                status_code=400,
+                detail="Image must be smaller than 20 MB."
+            )
+
+
+        # ----------------------------------------------------
+        # OPEN IMAGE
+        # ----------------------------------------------------
 
         image = Image.open(
-            BytesIO(image_bytes)
+            BytesIO(image_data)
         )
 
-        print("Image loaded successfully!")
 
-        # Prepare image
-        processed_image = prepare_image(
-            image
+        # ----------------------------------------------------
+        # CONVERT TO RGB
+        # ----------------------------------------------------
+
+        if image.mode != "RGB":
+
+            image = image.convert("RGB")
+
+
+        # ----------------------------------------------------
+        # CONVERT EVERYTHING TO JPEG
+        # ----------------------------------------------------
+
+        jpeg_buffer = BytesIO()
+
+        image.save(
+            jpeg_buffer,
+            format="JPEG",
+            quality=90
         )
 
-        # AI prediction
-        prediction = model.predict(
-            processed_image,
-            verbose=0
-        )[0]
+        jpeg_buffer.seek(0)
 
-        # Get highest probability
-        top_index = int(
-            np.argmax(prediction)
-        )
+        jpeg_data = jpeg_buffer.read()
 
-        top_crop = labels[top_index]
 
-        top_probability = float(
-            prediction[top_index] * 100
-        )
+    except HTTPException:
 
-        # Create probability results
-        probabilities = {}
+        raise
 
-        for index, label in enumerate(labels):
-
-            probabilities[label] = round(
-                float(prediction[index] * 100),
-                2
-            )
-
-        print("\nAI RESULT")
-        print("Crop:", top_crop)
-        print(
-            "Confidence:",
-            round(top_probability, 2),
-            "%"
-        )
-
-        print("\nAll probabilities:")
-
-        for crop, probability in probabilities.items():
-            print(
-                f"{crop}: {probability}%"
-            )
-
-        # Return result to website
-        return {
-            "success": True,
-            "crop": top_crop,
-            "confidence": round(
-                top_probability,
-                2
-            ),
-            "probabilities": probabilities
-        }
 
     except Exception as error:
 
-        print("\nERROR:")
-        print(error)
+        print("Image processing error:", error)
 
-        return {
-            "success": False,
-            "error": str(error)
-        }
+        raise HTTPException(
+            status_code=400,
+            detail="The uploaded file is not a valid image."
+        )
+
+
+    # --------------------------------------------------------
+    # SEND IMAGE TO PLANTNET
+    # --------------------------------------------------------
+
+    files = [
+        (
+            "images",
+            (
+                "plant.jpg",
+                jpeg_data,
+                "image/jpeg"
+            )
+        )
+    ]
+
+
+    params = {
+        "api-key": PLANTNET_API_KEY,
+        "lang": "en",
+        "nb-results": 5,
+        "detailed": "true"
+    }
+
+
+    try:
+
+        response = requests.post(
+            PLANTNET_URL,
+            params=params,
+            files=files,
+            timeout=60
+        )
+
+
+    except requests.exceptions.Timeout:
+
+        raise HTTPException(
+            status_code=504,
+            detail="Pl@ntNet request timed out."
+        )
+
+
+    except requests.exceptions.RequestException as error:
+
+        print("Pl@ntNet connection error:", error)
+
+        raise HTTPException(
+            status_code=502,
+            detail="Could not connect to Pl@ntNet."
+        )
+
+
+    # --------------------------------------------------------
+    # HANDLE PLANTNET ERROR
+    # --------------------------------------------------------
+
+    if response.status_code != 200:
+
+        print()
+        print("========== PLANTNET ERROR ==========")
+        print("Status:", response.status_code)
+        print("Response:", response.text)
+        print("====================================")
+        print()
+
+        try:
+
+            error_data = response.json()
+
+        except Exception:
+
+            error_data = {
+                "message": response.text
+            }
+
+
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=error_data
+        )
+
+
+    # --------------------------------------------------------
+    # PARSE RESULT
+    # --------------------------------------------------------
+
+    result = response.json()
+
+
+    # --------------------------------------------------------
+    # RETURN RESULT
+    # --------------------------------------------------------
+
+    return {
+
+        "success": True,
+
+        "source": "Pl@ntNet",
+
+        "bestMatch": result.get(
+            "bestMatch"
+        ),
+
+        "predictedOrgans": result.get(
+            "predictedOrgans",
+            []
+        ),
+
+        "results": result.get(
+            "results",
+            []
+        ),
+
+        "otherResults": result.get(
+            "otherResults",
+            {}
+        ),
+
+        "remainingRequests": result.get(
+            "remainingIdentificationRequests"
+        ),
+
+        "version": result.get(
+            "version"
+        )
+    }
