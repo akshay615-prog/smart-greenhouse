@@ -2,16 +2,13 @@
    SMART GREENHOUSE AI
    PLANT ENCYCLOPEDIA STYLES
    ========================================================= */
-
 :root {
     --eco-green: #39e58c;
     --eco-green-dark: #16a866;
     --eco-cyan: #35d9ff;
-
     --bg-main: #07110d;
     --bg-card: #0d1b15;
     --bg-card-2: #10241a;
-
     --text-main: #f2fff8;
     --text-soft: #a8bdb2;
     --text-muted: #71857b;
