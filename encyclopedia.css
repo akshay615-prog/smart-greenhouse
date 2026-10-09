@@ -12,10 +12,8 @@
     --text-main: #f2fff8;
     --text-soft: #a8bdb2;
     --text-muted: #71857b;
-
     --border: rgba(57, 229, 140, 0.16);
     --border-bright: rgba(57, 229, 140, 0.38);
-
     --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -78,17 +76,12 @@
 .encyclopedia-search input {
     width: 100%;
     height: 54px;
-    padding: 0 20px 0 50px;
-
-    border: 1px solid var(--border);
+    padding: 0 20px 0 50px;    border: 1px solid var(--border);
     border-radius: 16px;
-
     background: rgba(13, 27, 21, 0.88);
     color: var(--text-main);
-
     outline: none;
     font-size: 15px;
-
     transition:
         border-color 0.25s ease,
         box-shadow 0.25s ease,
