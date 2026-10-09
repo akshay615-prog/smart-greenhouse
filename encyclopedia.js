@@ -2,20 +2,16 @@
 // SMART GREENHOUSE AI
 // ENCYCLOPEDIA JAVASCRIPT
 // ============================================================
-
 "use strict";
-
 // ============================================================
 // CROP DATABASE
 // ============================================================
-
 const cropDatabase = {
     tomato: {
         name: "Tomato",
         scientificName: "Solanum lycopersicum",
         emoji: "🍅",
         category: "Vegetable / Fruit",
-
         description:
             "Tomato is a warm-season crop commonly grown in greenhouses and open fields. It requires good sunlight, controlled temperature, regular watering, and nutrient-rich soil.",
 
