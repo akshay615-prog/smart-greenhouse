@@ -6,13 +6,11 @@ button,input{font-family:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
 :focus-visible{outline:2px solid var(--green);outline-offset:2px}
-
 .navbar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 5%;background:rgba(7,16,13,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .logo{font-weight:800;font-size:18px}
 .nav-links{display:flex;gap:6px}
 .nav-links a{color:var(--soft);text-decoration:none;padding:8px 14px;border-radius:10px;font-weight:600;font-size:14px}
 .nav-links a:hover{color:var(--green);background:rgba(74,222,128,.08)}
-
 main{width:min(1200px,92%);margin:0 auto}
 section{padding:40px 0 20px}
 .section-heading{margin-bottom:24px}
