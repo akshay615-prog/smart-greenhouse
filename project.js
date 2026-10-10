@@ -1,9 +1,7 @@
 "use strict";
-
 const API_URL = "http://127.0.0.1:8000/predict";
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
 // ---------- DATA ----------
 const crops = [
   {cat:"crop",emoji:"🍅",name:"Tomato",sci:"Solanum lycopersicum",match:"lycopersicum",min:18,max:30,lo:20,hi:27,type:"Vegetable crop",
