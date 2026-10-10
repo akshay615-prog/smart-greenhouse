@@ -16,7 +16,6 @@ section{padding:40px 0 20px}
 .section-heading{margin-bottom:24px}
 .section-heading h1{font-size:clamp(30px,5vw,46px);letter-spacing:-1px}
 .section-heading p{color:var(--soft);max-width:620px}
-
 .dashboard-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:20px}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .card-icon,.sensor-icon,.upload-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:rgba(74,222,128,.1);font-size:24px}
