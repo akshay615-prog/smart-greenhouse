@@ -1,7 +1,6 @@
 :root{--bg:#07100d;--card:#0e211a;--line:rgba(74,222,128,.15);--text:#ecfdf5;--soft:#94a3a0;--green:#4ade80;--amber:#fbbf24;--red:#f87171}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:90px}
-
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 button,input{font-family:inherit}
 button{cursor:pointer}
