@@ -16,7 +16,6 @@ const cropDatabase = {
         category: "Vegetable / Fruit",
         description:
             "Tomato is a warm-season crop commonly grown in greenhouses and open fields. It requires good sunlight, controlled temperature, regular watering, and nutrient-rich soil.",
-
         temperature: "18°C – 27°C",
         humidity: "60% – 70%",
         soilMoisture: "60% – 80%",
