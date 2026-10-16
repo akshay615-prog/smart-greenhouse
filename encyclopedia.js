@@ -22,6 +22,7 @@ const cropDatabase = {
         soilMoisture: "60% – 80%",
         sunlight: "6 – 8 hours/day",
         waterRequirement: "Moderate",
+        
         growthTime: "60 – 100 days",
 
         soil:
