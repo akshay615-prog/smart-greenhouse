@@ -3,6 +3,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:90px}
 body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 button,input{font-family:inherit}
+
 button{cursor:pointer}
 .hidden{display:none!important}
 :focus-visible{outline:2px solid var(--green);outline-offset:2px}
